@@ -8,7 +8,7 @@ public sealed class PostgresContainerFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         Container = new PostgreSqlBuilder()
-            .WithImage("pgvector/pgvector:pg17")           
+            .WithImage("pgvector/pgvector:pg17")
             .WithDatabase("authdb")
             .WithUsername("postgres")
             .WithPassword("postgres")
@@ -16,7 +16,7 @@ public sealed class PostgresContainerFixture : IAsyncLifetime
             .Build();
 
         await Container.StartAsync();
-        ConnectionString = Container.GetConnectionString();     // gotowy CS
+        ConnectionString = Container.GetConnectionString();
     }
 
     public async Task DisposeAsync()

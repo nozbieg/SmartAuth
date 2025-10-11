@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
+using SmartAuth.Infrastructure;
 
 #nullable disable
 
@@ -31,21 +32,25 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Details")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("{}");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("audit_logs", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.AuthAttempt", b =>
@@ -90,7 +95,7 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.HasIndex("CreatedAt");
 
-                    b.ToTable("AuthAttempts");
+                    b.ToTable("auth_attempts", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.Device", b =>
@@ -100,17 +105,21 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("LastUsedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<string>("PublicKey")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("public_key");
 
                     b.Property<DateTimeOffset>("RegisteredAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("registered_at");
 
                     b.Property<bool>("Trusted")
                         .HasColumnType("boolean");
@@ -122,7 +131,7 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Devices");
+                    b.ToTable("devices", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.FaceTemplate", b =>
@@ -135,28 +144,34 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<Vector>("Embedding")
                         .IsRequired()
-                        .HasColumnType("vector(512)");
+                        .HasColumnType("vector(512)")
+                        .HasColumnName("embedding");
 
                     b.Property<float>("LivenessThreshold")
-                        .HasColumnType("real");
+                        .HasColumnType("real")
+                        .HasColumnName("liveness_threshold");
 
                     b.Property<string>("ModelVersion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("model_version");
 
                     b.Property<float>("QualityScore")
-                        .HasColumnType("real");
+                        .HasColumnType("real")
+                        .HasColumnName("quality_score");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthenticatorId")
                         .IsUnique();
 
-                    b.ToTable("FaceTemplates");
+                    b.ToTable("face_templates", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.RecoveryCode", b =>
@@ -167,10 +182,13 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.Property<string>("CodeHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("code_hash");
 
                     b.Property<DateTimeOffset?>("UsedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("used_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -179,7 +197,7 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RecoveryCodes");
+                    b.ToTable("recovery_codes", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.Session", b =>
@@ -189,17 +207,22 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
 
                     b.Property<string>("RefreshTokenHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("refresh_token_hash");
 
                     b.Property<DateTimeOffset?>("RevokedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -208,7 +231,7 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("sessions", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.TotpSecret", b =>
@@ -218,18 +241,21 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<bool>("Enforced")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Issuer")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("Secret")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -238,7 +264,7 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TotpSecrets");
+                    b.ToTable("totp_secrets", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.User", b =>
@@ -252,7 +278,8 @@ namespace SmartAuth.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
 
                     b.Property<DateTimeOffset?>("LastLoginAt")
                         .HasColumnType("timestamp with time zone");
@@ -273,7 +300,7 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.UserAuthenticator", b =>
@@ -321,19 +348,24 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<Vector>("Embedding")
                         .IsRequired()
-                        .HasColumnType("vector(256)");
+                        .HasColumnType("vector(256)")
+                        .HasColumnName("embedding");
 
                     b.Property<string>("ModelVersion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("model_version");
 
                     b.Property<string>("Phrase")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<int>("SampleRate")
                         .HasColumnType("integer");
@@ -343,7 +375,7 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.HasIndex("AuthenticatorId")
                         .IsUnique();
 
-                    b.ToTable("VoiceTemplates");
+                    b.ToTable("voice_templates", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.Device", b =>

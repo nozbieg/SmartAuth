@@ -16,22 +16,22 @@ namespace SmartAuth.Infrastructure.Migrations
                 .Annotation("Npgsql:PostgresExtension:vector", ",,");
 
             migrationBuilder.CreateTable(
-                name: "AuditLogs",
+                name: "audit_logs",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Action = table.Column<string>(type: "text", nullable: false),
-                    Details = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Action = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    Details = table.Column<string>(type: "jsonb", nullable: false, defaultValue: "{}"),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
+                    table.PrimaryKey("PK_audit_logs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AuthAttempts",
+                name: "auth_attempts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -48,15 +48,15 @@ namespace SmartAuth.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuthAttempts", x => x.Id);
+                    table.PrimaryKey("PK_auth_attempts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "character varying(320)", maxLength: 320, nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -65,92 +65,92 @@ namespace SmartAuth.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Devices",
+                name: "devices",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    PublicKey = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    public_key = table.Column<string>(type: "text", nullable: true),
                     Trusted = table.Column<bool>(type: "boolean", nullable: false),
-                    RegisteredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    LastUsedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    registered_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    last_used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Devices", x => x.Id);
+                    table.PrimaryKey("PK_devices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Devices_Users_UserId",
+                        name: "FK_devices_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RecoveryCodes",
+                name: "recovery_codes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CodeHash = table.Column<string>(type: "text", nullable: false),
-                    UsedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    code_hash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RecoveryCodes", x => x.Id);
+                    table.PrimaryKey("PK_recovery_codes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RecoveryCodes_Users_UserId",
+                        name: "FK_recovery_codes_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sessions",
+                name: "sessions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RefreshTokenHash = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    RevokedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    refresh_token_hash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    revoked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                    table.PrimaryKey("PK_sessions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sessions_Users_UserId",
+                        name: "FK_sessions_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TotpSecrets",
+                name: "totp_secrets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Secret = table.Column<string>(type: "text", nullable: false),
-                    Issuer = table.Column<string>(type: "text", nullable: false),
+                    Secret = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Issuer = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
                     Enforced = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TotpSecrets", x => x.Id);
+                    table.PrimaryKey("PK_totp_secrets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TotpSecrets_Users_UserId",
+                        name: "FK_totp_secrets_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -172,30 +172,30 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_UserAuthenticators", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserAuthenticators_Users_UserId",
+                        name: "FK_UserAuthenticators_users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FaceTemplates",
+                name: "face_templates",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthenticatorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Embedding = table.Column<Vector>(type: "vector(512)", nullable: false),
-                    ModelVersion = table.Column<string>(type: "text", nullable: false),
-                    LivenessThreshold = table.Column<float>(type: "real", nullable: false),
-                    QualityScore = table.Column<float>(type: "real", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    embedding = table.Column<Vector>(type: "vector(512)", nullable: false),
+                    model_version = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    liveness_threshold = table.Column<float>(type: "real", nullable: false),
+                    quality_score = table.Column<float>(type: "real", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FaceTemplates", x => x.Id);
+                    table.PrimaryKey("PK_face_templates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FaceTemplates_UserAuthenticators_AuthenticatorId",
+                        name: "FK_face_templates_UserAuthenticators_AuthenticatorId",
                         column: x => x.AuthenticatorId,
                         principalTable: "UserAuthenticators",
                         principalColumn: "Id",
@@ -203,22 +203,22 @@ namespace SmartAuth.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "VoiceTemplates",
+                name: "voice_templates",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthenticatorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Embedding = table.Column<Vector>(type: "vector(256)", nullable: false),
-                    Phrase = table.Column<string>(type: "text", nullable: false),
+                    embedding = table.Column<Vector>(type: "vector(256)", nullable: false),
+                    Phrase = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     SampleRate = table.Column<int>(type: "integer", nullable: false),
-                    ModelVersion = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    model_version = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VoiceTemplates", x => x.Id);
+                    table.PrimaryKey("PK_voice_templates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VoiceTemplates_UserAuthenticators_AuthenticatorId",
+                        name: "FK_voice_templates_UserAuthenticators_AuthenticatorId",
                         column: x => x.AuthenticatorId,
                         principalTable: "UserAuthenticators",
                         principalColumn: "Id",
@@ -226,34 +226,34 @@ namespace SmartAuth.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuthAttempts_CreatedAt",
-                table: "AuthAttempts",
+                name: "IX_auth_attempts_CreatedAt",
+                table: "auth_attempts",
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Devices_UserId",
-                table: "Devices",
+                name: "IX_devices_UserId",
+                table: "devices",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FaceTemplates_AuthenticatorId",
-                table: "FaceTemplates",
+                name: "IX_face_templates_AuthenticatorId",
+                table: "face_templates",
                 column: "AuthenticatorId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RecoveryCodes_UserId",
-                table: "RecoveryCodes",
+                name: "IX_recovery_codes_UserId",
+                table: "recovery_codes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sessions_UserId",
-                table: "Sessions",
+                name: "IX_sessions_UserId",
+                table: "sessions",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TotpSecrets_UserId",
-                table: "TotpSecrets",
+                name: "IX_totp_secrets_UserId",
+                table: "totp_secrets",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -262,14 +262,14 @@ namespace SmartAuth.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
-                table: "Users",
+                name: "IX_users_Email",
+                table: "users",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_VoiceTemplates_AuthenticatorId",
-                table: "VoiceTemplates",
+                name: "IX_voice_templates_AuthenticatorId",
+                table: "voice_templates",
                 column: "AuthenticatorId",
                 unique: true);
         }
@@ -278,34 +278,34 @@ namespace SmartAuth.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AuditLogs");
+                name: "audit_logs");
 
             migrationBuilder.DropTable(
-                name: "AuthAttempts");
+                name: "auth_attempts");
 
             migrationBuilder.DropTable(
-                name: "Devices");
+                name: "devices");
 
             migrationBuilder.DropTable(
-                name: "FaceTemplates");
+                name: "face_templates");
 
             migrationBuilder.DropTable(
-                name: "RecoveryCodes");
+                name: "recovery_codes");
 
             migrationBuilder.DropTable(
-                name: "Sessions");
+                name: "sessions");
 
             migrationBuilder.DropTable(
-                name: "TotpSecrets");
+                name: "totp_secrets");
 
             migrationBuilder.DropTable(
-                name: "VoiceTemplates");
+                name: "voice_templates");
 
             migrationBuilder.DropTable(
                 name: "UserAuthenticators");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "users");
         }
     }
 }

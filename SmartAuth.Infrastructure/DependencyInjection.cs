@@ -14,6 +14,7 @@ public static class DependencyInjection
             var cs = configuration.GetConnectionString("authdb")
                      ?? throw new InvalidOperationException("Missing AuthDb connection string");
             opts.UseNpgsql(cs, o => o.UseVector());
+            opts.UseSnakeCaseNamingConvention();
         });
         return services;
     }

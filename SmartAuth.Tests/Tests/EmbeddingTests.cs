@@ -6,10 +6,9 @@ using SmartAuth.Tests.Helpers;
 
 namespace SmartAuth.Tests.Tests;
 
-public class EmbeddingTests : IClassFixture<PostgresContainerFixture>
+public sealed class EmbeddingTests(PostgresContainerFixture fx) : IClassFixture<PostgresContainerFixture>
 {
-    private readonly string _cs;
-    public EmbeddingTests(PostgresContainerFixture fx) => _cs = fx.ConnectionString;
+    private readonly string _cs = fx.ConnectionString;
 
     [Fact]
     public async Task FaceTemplate_roundtrip_and_cosine_similarity()
@@ -22,19 +21,59 @@ public class EmbeddingTests : IClassFixture<PostgresContainerFixture>
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var auth = new UserAuthenticator { UserId = user.Id, Type = AuthenticatorType.Face, DisplayName = "cam1" };
+        var auth = new UserAuthenticator
+            { UserId = user.Id, Type = AuthenticatorType.Face, DisplayName = "cam1", IsEnrolled = false };
         db.UserAuthenticators.Add(auth);
         await db.SaveChangesAsync();
 
-        var v = new Vector(new[] { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f });
-        db.FaceTemplates.Add(new FaceTemplate { AuthenticatorId = auth.Id, Embedding = v, QualityScore = 0.9f });
+        var v512A = new Vector(Enumerable.Range(0, 512).Select(i => i % 10 / 10f).ToArray());
+        var v512B = new Vector(Enumerable.Range(0, 512)
+            .Select(i => i % 10 / 10f + (i % 2 == 0 ? 0.001f : -0.001f)).ToArray());
+
+        db.FaceTemplates.Add(new FaceTemplate { AuthenticatorId = auth.Id, Embedding = v512A, QualityScore = 0.9f });
+        auth.IsEnrolled = true;
         await db.SaveChangesAsync();
 
-        var back = await db.FaceTemplates.AsNoTracking().Include(faceTemplate => faceTemplate.Embedding).FirstAsync();
-        Assert.Equal(v.ToArray(), back.Embedding.ToArray());
+        var backEmbedding = await db.FaceTemplates
+            .AsNoTracking()
+            .Where(x => x.AuthenticatorId == auth.Id)
+            .Select(x => x.Embedding)
+            .FirstAsync();
 
-        var score = Utility.CosineSimilarity(back.Embedding,
-            new Vector(new[] { 0.1f, 0.2f, 0.3f, 0.41f, 0.49f, 0.6f, 0.69f, 0.8f }));
-        Assert.True(score > 0.99, $"Cosine too low: {score}");
+        Assert.Equal(v512A.ToArray(), backEmbedding.ToArray());
+
+        var score = Utility.CosineSimilarity(backEmbedding, v512B);
+        Assert.True(score > 0.999, $"Cosine too low: {score}");
+    }
+
+    [Fact]
+    public async Task VoiceTemplate_roundtrip()
+    {
+        await using var db = DbContextFactory.Create(_cs);
+        await db.Database.MigrateAsync();
+
+        var (hash, salt) = Passwords.Hash("Passw0rd!");
+        var user = new User { Email = "voice@example.com", PasswordHash = hash, PasswordSalt = salt };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var auth = new UserAuthenticator { UserId = user.Id, Type = AuthenticatorType.Voice, DisplayName = "mic1" };
+        db.UserAuthenticators.Add(auth);
+        await db.SaveChangesAsync();
+
+        var v256 = new Vector(Enumerable.Range(0, 256).Select(i => (float)Math.Sin(i)).ToArray());
+
+        db.VoiceTemplates.Add(new VoiceTemplate
+            { AuthenticatorId = auth.Id, Embedding = v256, Phrase = "open sesame", SampleRate = 16000 });
+        await db.SaveChangesAsync();
+
+        
+        var voiceEmbedding = await db.VoiceTemplates
+            .AsNoTracking()
+            .Where(x => x.AuthenticatorId == auth.Id)
+            .Select(x => x.Embedding)
+            .FirstAsync();
+
+        Assert.Equal(v256.ToArray(), voiceEmbedding.ToArray());
     }
 }

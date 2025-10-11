@@ -4,10 +4,9 @@ using SmartAuth.Tests.Helpers;
 
 namespace SmartAuth.Tests.Tests;
 
-public class UserTests : IClassFixture<PostgresContainerFixture>
+public sealed class UserTests(PostgresContainerFixture fx) : IClassFixture<PostgresContainerFixture>
 {
-    private readonly string _cs;
-    public UserTests(PostgresContainerFixture fx) => _cs = fx.ConnectionString;
+    private readonly string _cs = fx.ConnectionString;
 
     [Fact]
     public async Task Create_user_hashes_password_and_enforces_unique_email()
