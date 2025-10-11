@@ -6,7 +6,7 @@ using SmartAuth.Domain.Entities;
 using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Security;
 
-namespace SmartAuth.Api.Extensions;
+namespace SmartAuth.Api.Endpoints;
 
 public static class ApiEndpoints
 {

@@ -1,4 +1,6 @@
+
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using SmartAuth.Api.Endpoints;
 using SmartAuth.Api.Extensions;
 using SmartAuth.Api.HealthChecks;
 using SmartAuth.Api.Startup;
@@ -7,7 +9,10 @@ using SmartAuth.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSJwtSmartAuth(builder.Configuration);
+
 builder.AddServiceDefaults();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -28,7 +33,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseApiEndpoints();
-
-app.MapGet("/api/hello", () => new { message = "Hello from .NET 9 API 👋" });
+app.Use2FaEndpoints();
+app.UseFeatureFlagEndpoints();
 
 app.Run();
