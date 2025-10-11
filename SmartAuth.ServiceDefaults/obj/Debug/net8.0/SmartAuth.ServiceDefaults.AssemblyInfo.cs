@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartAuth.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a350fac069d1f5f4c0dfba57dabde544a881082d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4e5f9b436872b74968d6a9fbe6b46cc6794c4ae")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartAuth.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartAuth.ServiceDefaults")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

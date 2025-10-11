@@ -15,9 +15,95 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15525748-1ee2-455f-ac73-eef12497b3e3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/AddAuthenticatorDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/CreateUserDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/EnableTotpDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/FaceEnrollCompleteDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/FaceVerifyDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/VerifyTotpDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/VoiceEnrollCompleteDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Contracts/VoiceVerifyDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Extensions/ApiEndpoints.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/HealthChecks/DbConnectivityHealthCheck.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/HealthChecks/PendingMigrationsHealthCheck.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Startup/MigrationRunnerHostedService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Utilities/CosineSimilarity.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Api/Utilities/VectorMapping.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.AppHost/Consts.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.AppHost/db_init/00_create_authdb.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.AppHost/db_init/01_enable_pgvector.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/AttemptType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/AuditLog.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/AuthAttempt.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/AuthenticatorType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/Device.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/FaceTemplate.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/RecoveryCode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/Session.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/TotpSecret.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/User.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/UserAuthenticator.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/UserStatus.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/Entities/VoiceTemplate.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Domain/SmartAuth.Domain.csproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/AuthDbContext.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/DependencyInjection.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/DesignTimeFactory.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Migrations/20251011133232_Init.Designer.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Migrations/20251011133232_Init.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Migrations/20251011133251_VectorIndexes.Designer.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Migrations/20251011133251_VectorIndexes.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Migrations/AuthDbContextModelSnapshot.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/Security/Passwords.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Infrastructure/SmartAuth.Infrastructure.csproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/GlobalUsings.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/Helpers/DbContextFactory.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/PostgresContainerFixture.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/SmartAuth.Tests.csproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/Tests/EmbeddingTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/Tests/SchemaTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SmartAuth.Tests/Tests/UserTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SmartAuth/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SmartAuth/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/SmartAuth.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/SmartAuth.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/SmartAuth.Api.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/SmartAuth.Api.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/SmartAuth.AppHost.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/SmartAuth.AppHost.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/Extensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,8 +129,37 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a972b02c2cce4a10a53b99d80445b4395a00/f4/02bb0ff0/Vector.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2c955b8df8338f5b1390a86fd74fd1a30c9aab7df2fc482907411a3e7644f/PostgresBuilderExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b3b4a17037e4a1494a968ab7f297198db37bbb3d1239f396ad2892e342378bc/ParameterResourceBuilderExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b7edebeb9482c52811bfc7e735e25c8ea83ba50aea35b94ece69da3baf287e/HealthCheckResult.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Contracts/CreateUserDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Contracts/EnableTotpDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Contracts/VerifyTotpDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Contracts/VoiceEnrollCompleteDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Contracts/VoiceVerifyDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Extensions/ApiEndpoints.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Extensions/HealthEndpoints.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/HealthChecks/DbConnectivityHealthCheck.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/HealthChecks/PendingMigrationsHealthCheck.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock://D:/Magisterka/SmartAuth/SmartAuth.Api/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Startup/MigrationRunnerHostedService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Utilities/CosineSimilarity.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Utilities/VectorMapping.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.AppHost/Consts.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Domain/Entities/RecoveryCode.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Domain/Entities/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Infrastructure/AuthDbContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Infrastructure/DependencyInjection.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Infrastructure/DesignTimeFactory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Infrastructure/Security/Passwords.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/GlobalUsings.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/Helpers/DbContextFactory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/PostgresContainerFixture.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/Tests/EmbeddingTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/Tests/SchemaTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SmartAuth.Tests/Tests/UserTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SmartAuth.Web/Program.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -52,6 +167,9 @@
   &quot;isMigrated&quot;: true
 }</component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="SWEA" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -159,7 +277,7 @@
       <option name="presentableId" value="Default" />
       <updated>1760173925440</updated>
       <workItem from="1760173927454" duration="3351000" />
-      <workItem from="1760177347527" duration="1631000" />
+      <workItem from="1760177347527" duration="8986000" />
     </task>
     <task id="LOCAL-00001" summary="Init">
       <option name="closed" value="true" />
@@ -177,7 +295,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760177497723</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Eotking aspire">
+      <option name="closed" value="true" />
+      <created>1760183825316</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1760183825316</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -200,7 +326,8 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Init" />
     <MESSAGE value="git ignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="git ignore" />
+    <MESSAGE value="Eotking aspire" />
+    <option name="LAST_COMMIT_MESSAGE" value="Eotking aspire" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
