@@ -11,6 +11,6 @@ app.MapDefaultEndpoints();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/api/hello", () => new { message = "Hello from .NET 9 API 👋" });
+app.MapGet("/api/hello", () => new { message = "Hello from .NET 9 API 👋 Siema" });
 
 app.Run();

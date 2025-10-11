@@ -13,8 +13,6 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.1"/>
-        <PackageReference Include="Aspire.Hosting" Version="9.0.0"/>
-        <PackageReference Include="Aspire.Dashboard" Version="9.0.0"/>
     </ItemGroup>
 
     <ItemGroup>

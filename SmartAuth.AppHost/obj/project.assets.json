@@ -13,28 +13,32 @@
           "buildMultiTargeting/Aspire.Dashboard.Sdk.win-x64.targets": {}
         }
       },
-      "Aspire.Hosting/9.0.0": {
+      "Aspire.Hosting/9.5.1": {
         "type": "package",
         "dependencies": {
-          "AspNetCore.HealthChecks.Uris": "8.0.1",
-          "Google.Protobuf": "3.28.2",
-          "Grpc.AspNetCore": "2.66.0",
-          "Grpc.Net.ClientFactory": "2.66.0",
-          "Grpc.Tools": "2.67.0",
+          "AspNetCore.HealthChecks.Uris": "9.0.0",
+          "Google.Protobuf": "3.32.0",
+          "Grpc.AspNetCore": "2.71.0",
+          "Grpc.Net.ClientFactory": "2.71.0",
+          "Grpc.Tools": "2.72.0",
           "Humanizer.Core": "2.14.1",
-          "JsonPatch.Net": "3.1.1",
-          "KubernetesClient": "15.0.1",
+          "JsonPatch.Net": "3.3.0",
+          "KubernetesClient": "17.0.14",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
           "Microsoft.Extensions.Configuration.Binder": "8.0.2",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
-          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.11",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.20",
           "Microsoft.Extensions.Hosting": "8.0.1",
           "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
           "Microsoft.Extensions.Http": "8.0.1",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
           "Microsoft.Extensions.Options": "8.0.2",
           "Microsoft.Extensions.Primitives": "8.0.0",
-          "Polly.Core": "8.4.2"
+          "Newtonsoft.Json": "13.0.3",
+          "Polly.Core": "8.6.3",
+          "Semver": "3.0.0",
+          "StreamJsonRpc": "2.22.11",
+          "System.IO.Hashing": "9.0.8"
         },
         "compile": {
           "lib/net8.0/Aspire.Hosting.dll": {
@@ -1498,17 +1502,17 @@
         "tools/zh-Hant/Aspire.Dashboard.resources.dll"
       ]
     },
-    "Aspire.Hosting/9.0.0": {
-      "sha512": "mPsP6Yy5oZxRGdFEio7wVf99js7ieVWSrgPuFwPM/7rXedQfxN0WgKZZntbt5ryio5uW5+9c8Hr29aYVQlU5HA==",
+    "Aspire.Hosting/9.5.1": {
+      "sha512": "il7frwManbUV/ZnQXkgcYxULO/Nct0C3bGHuNFDxBroWE5Q9FShqcARfmLDHJvKDsiN1+SLc67ySpKY+rQrpzg==",
       "type": "package",
-      "path": "aspire.hosting/9.0.0",
+      "path": "aspire.hosting/9.5.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "README.md",
         "THIRD-PARTY-NOTICES.TXT",
-        "aspire.hosting.9.0.0.nupkg.sha512",
+        "aspire.hosting.9.5.1.nupkg.sha512",
         "aspire.hosting.nuspec",
         "lib/net8.0/Aspire.Hosting.dll",
         "lib/net8.0/Aspire.Hosting.xml",
@@ -3314,9 +3318,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "Aspire.Dashboard >= 9.0.0",
       "Aspire.Dashboard.Sdk.win-x64 >= 9.5.1",
-      "Aspire.Hosting >= 9.0.0",
       "Aspire.Hosting.AppHost >= 9.5.1",
       "Aspire.Hosting.Orchestration.win-x64 >= 9.5.1"
     ]
@@ -3374,18 +3376,10 @@
       "net9.0": {
         "targetAlias": "net9.0",
         "dependencies": {
-          "Aspire.Dashboard": {
-            "target": "Package",
-            "version": "[9.0.0, )"
-          },
           "Aspire.Dashboard.Sdk.win-x64": {
             "target": "Package",
             "version": "[9.5.1, )",
             "autoReferenced": true
-          },
-          "Aspire.Hosting": {
-            "target": "Package",
-            "version": "[9.0.0, )"
           },
           "Aspire.Hosting.AppHost": {
             "target": "Package",
@@ -3416,25 +3410,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Aspire.Dashboard with version (>= 9.0.0)\r\n  - Found 2 version(s) in nuget.org [ Nearest version: 8.0.0-preview.2.23619.3 ]\r\n  - Found 0 version(s) in C:\\Program Files\\dotnet\\library-packs",
-      "libraryId": "Aspire.Dashboard",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    },
-    {
-      "code": "NU1605",
-      "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: Aspire.Hosting from 9.5.1 to 9.0.0. Reference the package directly from the project to select a different version. \r\n SmartAuth.AppHost -> Aspire.Hosting.AppHost 9.5.1 -> Aspire.Hosting (>= 9.5.1) \r\n SmartAuth.AppHost -> Aspire.Hosting (>= 9.0.0)",
-      "libraryId": "Aspire.Hosting",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  }
 }

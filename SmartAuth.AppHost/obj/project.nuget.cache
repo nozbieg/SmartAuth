@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "yuUBJ9AXWLQ=",
-  "success": false,
+  "dgSpecHash": "SGW43RNWNrk=",
+  "success": true,
   "projectFilePath": "D:\\Magisterka\\SmartAuth\\SmartAuth.AppHost\\SmartAuth.AppHost.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\nolesiak\\.nuget\\packages\\aspire.dashboard.sdk.win-x64\\9.5.1\\aspire.dashboard.sdk.win-x64.9.5.1.nupkg.sha512",
-    "C:\\Users\\nolesiak\\.nuget\\packages\\aspire.hosting\\9.0.0\\aspire.hosting.9.0.0.nupkg.sha512",
+    "C:\\Users\\nolesiak\\.nuget\\packages\\aspire.hosting\\9.5.1\\aspire.hosting.9.5.1.nupkg.sha512",
     "C:\\Users\\nolesiak\\.nuget\\packages\\aspire.hosting.apphost\\9.5.1\\aspire.hosting.apphost.9.5.1.nupkg.sha512",
     "C:\\Users\\nolesiak\\.nuget\\packages\\aspire.hosting.orchestration.win-x64\\9.5.1\\aspire.hosting.orchestration.win-x64.9.5.1.nupkg.sha512",
     "C:\\Users\\nolesiak\\.nuget\\packages\\aspnetcore.healthchecks.uris\\9.0.0\\aspnetcore.healthchecks.uris.9.0.0.nupkg.sha512",
@@ -69,28 +69,5 @@
     "C:\\Users\\nolesiak\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
     "C:\\Users\\nolesiak\\.nuget\\packages\\yamldotnet\\16.3.0\\yamldotnet.16.3.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Aspire.Dashboard with version (>= 9.0.0)\r\n  - Found 2 version(s) in nuget.org [ Nearest version: 8.0.0-preview.2.23619.3 ]\r\n  - Found 0 version(s) in C:\\Program Files\\dotnet\\library-packs",
-      "projectPath": "D:\\Magisterka\\SmartAuth\\SmartAuth.AppHost\\SmartAuth.AppHost.csproj",
-      "filePath": "D:\\Magisterka\\SmartAuth\\SmartAuth.AppHost\\SmartAuth.AppHost.csproj",
-      "libraryId": "Aspire.Dashboard",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    },
-    {
-      "code": "NU1605",
-      "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: Aspire.Hosting from 9.5.1 to 9.0.0. Reference the package directly from the project to select a different version. \r\n SmartAuth.AppHost -> Aspire.Hosting.AppHost 9.5.1 -> Aspire.Hosting (>= 9.5.1) \r\n SmartAuth.AppHost -> Aspire.Hosting (>= 9.0.0)",
-      "projectPath": "D:\\Magisterka\\SmartAuth\\SmartAuth.AppHost\\SmartAuth.AppHost.csproj",
-      "filePath": "D:\\Magisterka\\SmartAuth\\SmartAuth.AppHost\\SmartAuth.AppHost.csproj",
-      "libraryId": "Aspire.Hosting",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  "logs": []
 }

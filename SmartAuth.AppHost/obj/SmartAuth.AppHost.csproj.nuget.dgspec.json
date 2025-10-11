@@ -52,18 +52,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
-            "Aspire.Dashboard": {
-              "target": "Package",
-              "version": "[9.0.0, )"
-            },
             "Aspire.Dashboard.Sdk.win-x64": {
               "target": "Package",
               "version": "[9.5.1, )",
               "autoReferenced": true
-            },
-            "Aspire.Hosting": {
-              "target": "Package",
-              "version": "[9.0.0, )"
             },
             "Aspire.Hosting.AppHost": {
               "target": "Package",

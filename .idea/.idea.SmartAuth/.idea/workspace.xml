@@ -14,45 +14,95 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15525748-1ee2-455f-ac73-eef12497b3e3" name="Changes" comment="" />
+    <list default="true" id="15525748-1ee2-455f-ac73-eef12497b3e3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SmartAuth/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SmartAuth/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/Debug/net9.0/SmartAuth.Api.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Api/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/SmartAuth.AppHost.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/SmartAuth.AppHost.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/Debug/net9.0/SmartAuth.AppHost.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/SmartAuth.AppHost.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.AppHost/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/Debug/net8.0/SmartAuth.ServiceDefaults.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.ServiceDefaults/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/Debug/net9.0/SmartAuth.Web.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SmartAuth.Web/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/SmartAuth.Web/obj/rider.project.restore.info" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;nozbieg&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/nozbieg/SmartAuth.git&quot;,
+    &quot;accountId&quot;: &quot;1cf143c6-a650-4382-86df-081629da4ee0&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/SmartAuth.Api/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://D:/Magisterka/SmartAuth/SmartAuth.Api/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SmartAuth.Web/Program.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="33ujboEYSla7Rgu7hWSQTkJOBDt" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "D:\\Magisterka\\SmartAuth\\SmartAuth.Web\\ClientApp\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.SmartAuth.Api.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.SmartAuth.Web.executor&quot;: &quot;Run&quot;,
+    &quot;Aspire Host.SmartAuth.AppHost.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Magisterka\\SmartAuth\\SmartAuth.Web\\ClientApp\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Aspire Host.SmartAuth.AppHost">
+}</component>
+  <component name="RunManager" selected="Compound.App">
     <configuration name="SmartAuth.AppHost" type="AspireHostConfiguration" factoryName="Aspire Host" activateToolWindowBeforeRun="false">
       <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/SmartAuth.AppHost/SmartAuth.AppHost.csproj" />
       <option name="PROJECT_TFM" value="net9.0" />
@@ -63,12 +113,12 @@
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SmartAuth.AppHost" />
       <option name="TRACK_ENVS" value="1" />
       <envs>
-        <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
         <env name="DOTNET_ENVIRONMENT" value="Development" />
+        <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
         <env name="DOTNET_DASHBOARD_OTLP_ENDPOINT_URL" value="https://localhost:21143" />
         <env name="DOTNET_RESOURCE_SERVICE_ENDPOINT_URL" value="https://localhost:22071" />
-        <env name="DOTNET_LAUNCH_PROFILE" value="SmartAuth.AppHost" />
         <env name="ASPNETCORE_URLS" value="https://localhost:17289;http://localhost:15185" />
+        <env name="DOTNET_LAUNCH_PROFILE" value="SmartAuth.AppHost" />
       </envs>
       <option name="USE_PODMAN_RUNTIME" value="0" />
       <option name="TRACK_URL" value="1" />
@@ -77,6 +127,11 @@
       <method v="2">
         <option name="Build" />
       </method>
+    </configuration>
+    <configuration name="App" type="CompoundRunConfigurationType">
+      <toRun name="SmartAuth.Api" type="LaunchSettings" />
+      <toRun name="SmartAuth.Web" type="LaunchSettings" />
+      <method v="2" />
     </configuration>
     <configuration name="SmartAuth.Api" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/SmartAuth.Api/SmartAuth.Api.csproj" />
@@ -114,6 +169,7 @@
       <item itemvalue=".NET Launch Settings Profile.SmartAuth.Api" />
       <item itemvalue=".NET Launch Settings Profile.SmartAuth.Web" />
       <item itemvalue="Aspire Host.SmartAuth.AppHost" />
+      <item itemvalue="Compound.App" />
     </list>
   </component>
   <component name="TaskManager">
@@ -123,13 +179,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1760173925440</updated>
-      <workItem from="1760173927454" duration="2621000" />
+      <workItem from="1760173927454" duration="3351000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
