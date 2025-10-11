@@ -25,7 +25,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartAuth.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a350fac069d1f5f4c0dfba57dabde544a881082d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ebca410edde7502c54b56fb987580ab6a8952b4")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartAuth.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartAuth.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
