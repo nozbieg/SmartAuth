@@ -21,8 +21,4 @@
       <ProjectReference Include="..\SmartAuth.Domain\SmartAuth.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Migrations\" />
-    </ItemGroup>
-
 </Project>

@@ -7,13 +7,21 @@ public sealed class DesignTimeFactory : IDesignTimeDbContextFactory<AuthDbContex
 {
     public AuthDbContext CreateDbContext(string[] args)
     {
-        var cs = Environment.GetEnvironmentVariable("auuthdb")
-                 ?? "Host=localhost;Port=5432;Database=authdb;Username=postgres;Password=postgres";
+        var cs =
+            Environment.GetEnvironmentVariable("AUTHDB_CS")
+            ?? Environment.GetEnvironmentVariable("ConnectionStrings__authdb")
+            ?? "Host=localhost;Port=5432;Database=authdb;Username=postgres;Password=postgres";
 
-        var opt = new DbContextOptionsBuilder<AuthDbContext>()
-            .UseNpgsql(cs, o => o.UseVector())
+        var options = new DbContextOptionsBuilder<AuthDbContext>()
+            .UseNpgsql(cs, npg =>
+            {
+                npg.UseVector();                   
+                npg.MigrationsAssembly("SmartAuth.Infrastructure"); 
+            })
+            .UseSnakeCaseNamingConvention()      
+            .EnableSensitiveDataLogging()         
             .Options;
 
-        return new(opt);
+        return new AuthDbContext(options);
     }
 }

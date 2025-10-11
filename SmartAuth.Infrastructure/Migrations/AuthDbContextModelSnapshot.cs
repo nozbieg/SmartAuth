@@ -28,12 +28,14 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("Action")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("action");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -43,12 +45,15 @@ namespace SmartAuth.Infrastructure.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasDefaultValue("{}");
+                        .HasDefaultValue("{}")
+                        .HasColumnName("details");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_audit_logs");
 
                     b.ToTable("audit_logs", (string)null);
                 });
@@ -57,43 +62,56 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<Guid?>("DeviceId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("device_id");
 
                     b.Property<string>("FailureReason")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("failure_reason");
 
                     b.Property<string>("Ip")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ip");
 
                     b.Property<double?>("RiskScore")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("risk_score");
 
                     b.Property<double?>("Score")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasColumnName("score");
 
                     b.Property<bool>("Success")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("success");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
                     b.Property<string>("UserAgent")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_agent");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_auth_attempts");
 
-                    b.HasIndex("CreatedAt");
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_auth_attempts_created_at");
 
                     b.ToTable("auth_attempts", (string)null);
                 });
@@ -102,7 +120,8 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset?>("LastUsedAt")
                         .HasColumnType("timestamp with time zone")
@@ -111,7 +130,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
 
                     b.Property<string>("PublicKey")
                         .HasColumnType("text")
@@ -122,14 +142,18 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnName("registered_at");
 
                     b.Property<bool>("Trusted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("trusted");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_devices");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_devices_user_id");
 
                     b.ToTable("devices", (string)null);
                 });
@@ -138,10 +162,12 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("AuthenticatorId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("authenticator_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -166,10 +192,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("real")
                         .HasColumnName("quality_score");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_face_templates");
 
                     b.HasIndex("AuthenticatorId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_face_templates_authenticator_id");
 
                     b.ToTable("face_templates", (string)null);
                 });
@@ -178,7 +206,8 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("CodeHash")
                         .IsRequired()
@@ -191,11 +220,14 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnName("used_at");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_recovery_codes");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_recovery_codes_user_id");
 
                     b.ToTable("recovery_codes", (string)null);
                 });
@@ -204,7 +236,8 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -225,11 +258,14 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnName("revoked_at");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_sessions");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_sessions_user_id");
 
                     b.ToTable("sessions", (string)null);
                 });
@@ -238,31 +274,38 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<bool>("Enforced")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("enforced");
 
                     b.Property<string>("Issuer")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("issuer");
 
                     b.Property<string>("Secret")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("secret");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_totp_secrets");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_totp_secrets_user_id");
 
                     b.ToTable("totp_secrets", (string)null);
                 });
@@ -271,34 +314,43 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(320)
-                        .HasColumnType("character varying(320)");
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("email");
 
                     b.Property<DateTimeOffset?>("LastLoginAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_at");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasColumnName("password_hash");
 
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasColumnName("password_salt");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
                 });
@@ -307,45 +359,57 @@ namespace SmartAuth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("display_name");
 
                     b.Property<bool>("IsEnrolled")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_enrolled");
 
                     b.Property<bool>("IsPrimary")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_primary");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_user_authenticators");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_authenticators_user_id");
 
-                    b.ToTable("UserAuthenticators");
+                    b.ToTable("user_authenticators", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.VoiceTemplate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("AuthenticatorId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("authenticator_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -365,15 +429,19 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.Property<string>("Phrase")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("phrase");
 
                     b.Property<int>("SampleRate")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("sample_rate");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_voice_templates");
 
                     b.HasIndex("AuthenticatorId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_voice_templates_authenticator_id");
 
                     b.ToTable("voice_templates", (string)null);
                 });
@@ -384,7 +452,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_devices_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -395,7 +464,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithOne("FaceTemplate")
                         .HasForeignKey("SmartAuth.Domain.Entities.FaceTemplate", "AuthenticatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_face_templates_user_authenticators_authenticator_id");
 
                     b.Navigation("Authenticator");
                 });
@@ -406,7 +476,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_recovery_codes_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -417,7 +488,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_sessions_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -428,7 +500,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_totp_secrets_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -439,7 +512,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithMany("Authenticators")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_user_authenticators_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -450,7 +524,8 @@ namespace SmartAuth.Infrastructure.Migrations
                         .WithOne("VoiceTemplate")
                         .HasForeignKey("SmartAuth.Domain.Entities.VoiceTemplate", "AuthenticatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_voice_templates_user_authenticators_authenticator_id");
 
                     b.Navigation("Authenticator");
                 });

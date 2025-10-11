@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SmartAuth.Infrastructure;
@@ -13,7 +12,11 @@ public static class DependencyInjection
         {
             var cs = configuration.GetConnectionString("authdb")
                      ?? throw new InvalidOperationException("Missing AuthDb connection string");
-            opts.UseNpgsql(cs, o => o.UseVector());
+            opts.UseNpgsql(cs, npg =>
+            {
+                npg.UseVector();
+                npg.MigrationsAssembly("SmartAuth.Infrastructure");
+            });
             opts.UseSnakeCaseNamingConvention();
         });
         return services;
