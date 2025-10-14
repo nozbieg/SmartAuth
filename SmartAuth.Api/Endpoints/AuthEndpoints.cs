@@ -57,7 +57,6 @@ public static class AuthEndpoints
             var ok = AuthCrypto.VerifyPassword(req.Password, user.PasswordHash, user.PasswordSalt);
             if (!ok) return Results.Unauthorized();
 
-            // Feature flags -> decyzja o 2FA
             var flags = cfg.GetSection("FeatureFlags").Get<FeatureFlags>()!;
             var methods = new List<string>();
             if (flags.twofa_code) methods.Add("code");

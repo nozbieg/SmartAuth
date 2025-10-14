@@ -2,7 +2,6 @@
 
 namespace SmartAuth.Api.Contracts;
 
-// ======= Verification =======
 public sealed class FaceVerifyDto
 {
     [Required, EmailAddress] public string Email { get; set; } = string.Empty;

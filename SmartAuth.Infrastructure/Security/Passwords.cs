@@ -4,8 +4,8 @@ using System.Security.Cryptography;
 
 public static class Passwords
 {
-    private const int SaltSize = 16; // 128 bit
-    private const int KeySize = 32; // 256 bit
+    private const int SaltSize = 16;
+    private const int KeySize = 32; 
     private const int Iterations = 100_000;
     private static readonly HashAlgorithmName HashAlgorithm = HashAlgorithmName.SHA256;
 

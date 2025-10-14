@@ -10,9 +10,8 @@ public static class DbContextFactory
             .UseNpgsql(cs, npg =>
             {
                 npg.UseVector();
-                // npg.MigrationsAssembly("SmartAuth.Infrastructure"); // niekonieczne, ale pozostawione jako komentarz.
             })
-            .UseSnakeCaseNamingConvention() // zapewnia zgodność z migracjami / snapshotem
+            .UseSnakeCaseNamingConvention() 
             .EnableSensitiveDataLogging()
             .Options;
 

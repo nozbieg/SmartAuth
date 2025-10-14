@@ -7,8 +7,8 @@ public sealed class FaceTemplateConfiguration : IEntityTypeConfiguration<FaceTem
         e.ToTable("face_templates");
         e.HasKey(x => x.Id);
         e.Property(x => x.Embedding)
-            .HasColumnName("embedding")           // <-- lowercase
-            .HasColumnType("vector(512)")         // <-- pgvector
+            .HasColumnName("embedding")           
+            .HasColumnType("vector(512)")         
             .IsRequired();
 
         e.Property(x => x.ModelVersion).HasMaxLength(50).HasColumnName("model_version");

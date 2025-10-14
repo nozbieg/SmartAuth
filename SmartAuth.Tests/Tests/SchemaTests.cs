@@ -14,22 +14,24 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
     {
         await using var db = DbContextFactory.Create(_cs);
 
-        // Utwórz/aktualizuj schemat zgodnie z migracjami
         await db.Database.MigrateAsync();
 
         var pending = await db.Database.GetPendingMigrationsAsync();
         Assert.Empty(pending);
     }
 
-    [Fact]
-    public async Task Model_entities_tables_columns_indexes_and_relationships_are_configured()
+    private async Task<Microsoft.EntityFrameworkCore.Metadata.IModel> GetModelAsync()
     {
         await using var db = DbContextFactory.Create(_cs);
         await db.Database.MigrateAsync();
+        var model = db.Model; // IModel jest niezależny od cyklu życia DbContext
+        return model;
+    }
 
-        var model = db.Model;
-
-        // === Users ===
+    [Fact]
+    public async Task Model_User_entity_configured()
+    {
+        var model = await GetModelAsync();
         var userEt = model.FindEntityType(typeof(User));
         Assert.NotNull(userEt);
         Assert.NotNull(userEt!.GetTableName());
@@ -37,12 +39,17 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         var emailProp = userEt.FindProperty(nameof(User.Email));
         Assert.NotNull(emailProp);
 
-        // unikalny indeks na Email (pojedyncza kolumna)
         var emailUniqueIdx = userEt.GetIndexes()
             .FirstOrDefault(i => i.IsUnique && i.Properties.SequenceEqual(new[] { emailProp }));
         Assert.NotNull(emailUniqueIdx);
+    }
 
-        // === UserAuthenticators ===
+    [Fact]
+    public async Task Model_UserAuthenticator_entity_and_relationship_to_User_configured()
+    {
+        var model = await GetModelAsync();
+        var userEt = model.FindEntityType(typeof(User));
+        Assert.NotNull(userEt);
         var uaEt = model.FindEntityType(typeof(UserAuthenticator));
         Assert.NotNull(uaEt);
         Assert.NotNull(uaEt!.GetTableName());
@@ -50,13 +57,17 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         var uaTypeProp = uaEt.FindProperty(nameof(UserAuthenticator.Type));
         Assert.NotNull(uaTypeProp);
 
-        // relacja UA -> User (wiele do jednego)
         var fkUaUser = uaEt.GetForeignKeys()
-            .FirstOrDefault(fk =>
-                fk.PrincipalEntityType == userEt && fk.Properties.Any(p => p.Name == nameof(UserAuthenticator.UserId)));
+            .FirstOrDefault(fk => fk.PrincipalEntityType == userEt && fk.Properties.Any(p => p.Name == nameof(UserAuthenticator.UserId)));
         Assert.NotNull(fkUaUser);
+    }
 
-        // === FaceTemplates ===
+    [Fact]
+    public async Task Model_FaceTemplate_entity_and_relationship_configured()
+    {
+        var model = await GetModelAsync();
+        var uaEt = model.FindEntityType(typeof(UserAuthenticator));
+        Assert.NotNull(uaEt);
         var faceEt = model.FindEntityType(typeof(FaceTemplate));
         Assert.NotNull(faceEt);
         Assert.NotNull(faceEt!.GetTableName());
@@ -65,22 +76,24 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         Assert.NotNull(faceEmbeddingProp);
         Assert.Equal(typeof(Vector), faceEmbeddingProp!.ClrType);
 
-        // Typ kolumny wg konfiguracji (vector(512))
         var faceStore = StoreObjectIdentifier.Table(faceEt.GetTableName()!, faceEt.GetSchema());
         var faceEmbeddingColumnName = faceEmbeddingProp.GetColumnName(faceStore);
         var faceEmbeddingColumnType = faceEmbeddingProp.GetColumnType();
         Assert.False(string.IsNullOrWhiteSpace(faceEmbeddingColumnName));
         Assert.Equal("vector(512)", faceEmbeddingColumnType);
 
-        // relacja FaceTemplate (1:1) -> UserAuthenticator
         var fkFaceUa = faceEt.GetForeignKeys()
-            .FirstOrDefault(fk =>
-                fk.PrincipalEntityType == uaEt &&
-                fk.Properties.Any(p => p.Name == nameof(FaceTemplate.AuthenticatorId)));
+            .FirstOrDefault(fk => fk.PrincipalEntityType == uaEt && fk.Properties.Any(p => p.Name == nameof(FaceTemplate.AuthenticatorId)));
         Assert.NotNull(fkFaceUa);
-        Assert.True(fkFaceUa!.IsUnique); // 1:1
+        Assert.True(fkFaceUa!.IsUnique);
+    }
 
-        // === VoiceTemplates ===
+    [Fact]
+    public async Task Model_VoiceTemplate_entity_and_relationship_configured()
+    {
+        var model = await GetModelAsync();
+        var uaEt = model.FindEntityType(typeof(UserAuthenticator));
+        Assert.NotNull(uaEt);
         var voiceEt = model.FindEntityType(typeof(VoiceTemplate));
         Assert.NotNull(voiceEt);
         Assert.NotNull(voiceEt!.GetTableName());
@@ -96,13 +109,15 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         Assert.Equal("vector(256)", voiceEmbeddingColumnType);
 
         var fkVoiceUa = voiceEt.GetForeignKeys()
-            .FirstOrDefault(fk =>
-                fk.PrincipalEntityType == uaEt &&
-                fk.Properties.Any(p => p.Name == nameof(VoiceTemplate.AuthenticatorId)));
+            .FirstOrDefault(fk => fk.PrincipalEntityType == uaEt && fk.Properties.Any(p => p.Name == nameof(VoiceTemplate.AuthenticatorId)));
         Assert.NotNull(fkVoiceUa);
-        Assert.True(fkVoiceUa!.IsUnique); // 1:1
+        Assert.True(fkVoiceUa!.IsUnique);
+    }
 
-        // === AuthAttempts (przykładowa weryfikacja indeksu po CreatedAt) ===
+    [Fact]
+    public async Task Model_AuthAttempt_entity_index_on_CreatedAt_exists()
+    {
+        var model = await GetModelAsync();
         var attemptEt = model.FindEntityType(typeof(AuthAttempt));
         Assert.NotNull(attemptEt);
         var createdAtProp = attemptEt!.FindProperty(nameof(AuthAttempt.CreatedAt));

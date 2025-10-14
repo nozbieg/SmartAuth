@@ -46,7 +46,7 @@ public static class ApiEndpoints
             var tmpl = new FaceTemplate
             {
                 AuthenticatorId = auth.Id,
-                Embedding = dto.Embedding.ToVector(), // <— mapowanie
+                Embedding = dto.Embedding.ToVector(),
                 QualityScore = dto.QualityScore,
                 ModelVersion = dto.ModelVersion ?? "face-v1"
             };

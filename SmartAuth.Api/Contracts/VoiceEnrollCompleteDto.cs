@@ -2,7 +2,6 @@
 
 namespace SmartAuth.Api.Contracts;
 
-// ======= Voice Enrollment =======
 public sealed class VoiceEnrollCompleteDto
 {
     [Required] public Guid AuthenticatorId { get; set; }

@@ -3,7 +3,6 @@ using SmartAuth.Domain.Entities;
 
 namespace SmartAuth.Api.Contracts;
 
-// ======= Authenticators =======
 public sealed class AddAuthenticatorDto
 {
     [Required] public Guid UserId { get; set; }
