@@ -1,10 +1,10 @@
-﻿namespace SmartAuth.Domain.Entities;
+﻿using SmartAuth.Domain.Common;
 
-public class AuditLog
+namespace SmartAuth.Domain.Entities;
+
+public class AuditLog : AuditableEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid? UserId { get; set; }
     public string Action { get; set; } = string.Empty;
     public string Details { get; set; } = "{}";
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

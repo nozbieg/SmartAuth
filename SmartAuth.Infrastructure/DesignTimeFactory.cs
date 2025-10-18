@@ -15,13 +15,13 @@ public sealed class DesignTimeFactory : IDesignTimeDbContextFactory<AuthDbContex
         var options = new DbContextOptionsBuilder<AuthDbContext>()
             .UseNpgsql(cs, npg =>
             {
-                npg.UseVector();                   
-                npg.MigrationsAssembly("SmartAuth.Infrastructure"); 
+                npg.UseVector();
+                npg.MigrationsAssembly("SmartAuth.Infrastructure");
             })
-            .UseSnakeCaseNamingConvention()      
-            .EnableSensitiveDataLogging()         
+            .UseSnakeCaseNamingConvention()
+            .EnableSensitiveDataLogging()
             .Options;
 
-        return new AuthDbContext(options);
+        return new AuthDbContext(options, TimeProvider.System);
     }
 }

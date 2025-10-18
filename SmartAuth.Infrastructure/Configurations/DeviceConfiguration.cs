@@ -5,7 +5,6 @@ public sealed class DeviceConfiguration : IEntityTypeConfiguration<Device>
     public void Configure(EntityTypeBuilder<Device> e)
     {
         e.ToTable("devices");
-        e.HasKey(x => x.Id);
         e.Property(x => x.Name).HasMaxLength(120).IsRequired();
         e.Property(x => x.PublicKey).HasColumnName("public_key");
         e.Property(x => x.Trusted);

@@ -15,6 +15,6 @@ public static class DbContextFactory
             .EnableSensitiveDataLogging()
             .Options;
 
-        return new AuthDbContext(options);
+        return new AuthDbContext(options, TimeProvider.System);
     }
 }

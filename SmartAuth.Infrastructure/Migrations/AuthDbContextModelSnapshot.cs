@@ -18,7 +18,7 @@ namespace SmartAuth.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
@@ -27,7 +27,6 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -37,9 +36,11 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("character varying(120)")
                         .HasColumnName("action");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<string>("Details")
                         .IsRequired()
@@ -47,6 +48,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("jsonb")
                         .HasDefaultValue("{}")
                         .HasColumnName("details");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
@@ -61,13 +68,14 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.AuthAttempt", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Guid?>("DeviceId")
                         .HasColumnType("uuid")
@@ -98,6 +106,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
                     b.Property<string>("UserAgent")
                         .IsRequired()
                         .HasColumnType("text")
@@ -110,18 +124,20 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_auth_attempts");
 
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_auth_attempts_created_at");
-
                     b.ToTable("auth_attempts", (string)null);
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.Device", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<DateTimeOffset?>("LastUsedAt")
                         .HasColumnType("timestamp with time zone")
@@ -145,6 +161,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("trusted");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
@@ -161,7 +183,6 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.FaceTemplate", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -169,9 +190,11 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("authenticator_id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Vector>("Embedding")
                         .IsRequired()
@@ -192,6 +215,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("real")
                         .HasColumnName("quality_score");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
                     b.HasKey("Id")
                         .HasName("pk_face_templates");
 
@@ -205,7 +234,6 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.RecoveryCode", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -214,6 +242,18 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("code_hash");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<DateTimeOffset?>("UsedAt")
                         .HasColumnType("timestamp with time zone")
@@ -235,13 +275,14 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.Session", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
@@ -256,6 +297,12 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("revoked_at");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -273,13 +320,14 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.TotpSecret", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<bool>("Enforced")
                         .HasColumnType("boolean")
@@ -297,6 +345,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("secret");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
@@ -313,13 +367,14 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -345,6 +400,12 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -358,13 +419,14 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.UserAuthenticator", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -383,9 +445,11 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -400,10 +464,119 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.ToTable("user_authenticators", (string)null);
                 });
 
+            modelBuilder.Entity("SmartAuth.Domain.Entities.UserLoginConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
+                    b.Property<bool>("FaceEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("face_enabled");
+
+                    b.Property<string>("FaceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("face_provider");
+
+                    b.Property<DateTime?>("FaceUpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("face_updated_at_utc");
+
+                    b.Property<string>("TotpAlgorithm")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("SHA1")
+                        .HasColumnName("totp_algorithm");
+
+                    b.Property<int>("TotpDigits")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(6)
+                        .HasColumnName("totp_digits");
+
+                    b.Property<int>("TotpDriftSteps")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("totp_drift_steps");
+
+                    b.Property<bool>("TotpEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("totp_enabled");
+
+                    b.Property<string>("TotpKeyId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("totp_key_id");
+
+                    b.Property<string>("TotpLastCodeHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("totp_last_code_hash");
+
+                    b.Property<DateTime?>("TotpLastVerifiedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("totp_last_verified_at_utc");
+
+                    b.Property<int>("TotpPeriodSeconds")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(30)
+                        .HasColumnName("totp_period_seconds");
+
+                    b.Property<byte[]>("TotpSecretCiphertext")
+                        .HasColumnType("bytea")
+                        .HasColumnName("totp_secret_ciphertext");
+
+                    b.Property<byte[]>("TotpSecretNonce")
+                        .HasColumnType("bytea")
+                        .HasColumnName("totp_secret_nonce");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<bool>("VoiceEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("voice_enabled");
+
+                    b.Property<string>("VoiceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("voice_provider");
+
+                    b.Property<DateTime?>("VoiceUpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("voice_updated_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_login_configurations");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_login_configurations_user_id");
+
+                    b.ToTable("user_login_configurations", (string)null);
+                });
+
             modelBuilder.Entity("SmartAuth.Domain.Entities.VoiceTemplate", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -411,9 +584,11 @@ namespace SmartAuth.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("authenticator_id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.Property<Vector>("Embedding")
                         .IsRequired()
@@ -435,6 +610,12 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.Property<int>("SampleRate")
                         .HasColumnType("integer")
                         .HasColumnName("sample_rate");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc")
+                        .HasDefaultValueSql("now() at time zone 'utc'");
 
                     b.HasKey("Id")
                         .HasName("pk_voice_templates");
@@ -518,6 +699,18 @@ namespace SmartAuth.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartAuth.Domain.Entities.UserLoginConfiguration", b =>
+                {
+                    b.HasOne("SmartAuth.Domain.Entities.User", "User")
+                        .WithOne("LoginConfiguration")
+                        .HasForeignKey("SmartAuth.Domain.Entities.UserLoginConfiguration", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_login_configurations_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SmartAuth.Domain.Entities.VoiceTemplate", b =>
                 {
                     b.HasOne("SmartAuth.Domain.Entities.UserAuthenticator", "Authenticator")
@@ -533,6 +726,8 @@ namespace SmartAuth.Infrastructure.Migrations
             modelBuilder.Entity("SmartAuth.Domain.Entities.User", b =>
                 {
                     b.Navigation("Authenticators");
+
+                    b.Navigation("LoginConfiguration");
                 });
 
             modelBuilder.Entity("SmartAuth.Domain.Entities.UserAuthenticator", b =>

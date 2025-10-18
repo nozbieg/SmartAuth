@@ -1,8 +1,9 @@
-﻿namespace SmartAuth.Domain.Entities;
+﻿using SmartAuth.Domain.Common;
 
-public class Device
+namespace SmartAuth.Domain.Entities;
+
+public class Device : AuditableEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }
     public User User { get; set; } = default!;
     public string Name { get; set; } = string.Empty;

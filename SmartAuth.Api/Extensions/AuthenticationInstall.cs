@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens; 
+
 namespace SmartAuth.Api.Extensions;
 
 public static class AuthenticationInstall
@@ -30,7 +28,7 @@ public static class AuthenticationInstall
                 ClockSkew = TimeSpan.FromSeconds(5)
             };
         });
-        
+
         services.AddAuthorization();
 
         return services;

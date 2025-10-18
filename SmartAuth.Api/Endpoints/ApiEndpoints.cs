@@ -53,7 +53,6 @@ public static class ApiEndpoints
 
             db.FaceTemplates.Add(tmpl);
             auth.IsEnrolled = true;
-            auth.UpdatedAt = DateTimeOffset.UtcNow;
 
             await db.SaveChangesAsync();
             return Results.Ok(new { auth.Id, templateId = tmpl.Id });

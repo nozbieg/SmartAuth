@@ -23,7 +23,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     action = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     details = table.Column<string>(type: "jsonb", nullable: false, defaultValue: "{}"),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -44,7 +45,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     user_agent = table.Column<string>(type: "text", nullable: false),
                     device_id = table.Column<Guid>(type: "uuid", nullable: true),
                     failure_reason = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -60,8 +62,9 @@ namespace SmartAuth.Infrastructure.Migrations
                     password_hash = table.Column<byte[]>(type: "bytea", nullable: false),
                     password_salt = table.Column<byte[]>(type: "bytea", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    last_login_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    last_login_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -78,7 +81,9 @@ namespace SmartAuth.Infrastructure.Migrations
                     public_key = table.Column<string>(type: "text", nullable: true),
                     trusted = table.Column<bool>(type: "boolean", nullable: false),
                     registered_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    last_used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    last_used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -98,7 +103,9 @@ namespace SmartAuth.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     code_hash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    used_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -118,9 +125,10 @@ namespace SmartAuth.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     refresh_token_hash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    revoked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    revoked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -142,7 +150,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     secret = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     issuer = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
                     enforced = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -165,14 +174,50 @@ namespace SmartAuth.Infrastructure.Migrations
                     display_name = table.Column<string>(type: "text", nullable: false),
                     is_primary = table.Column<bool>(type: "boolean", nullable: false),
                     is_enrolled = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user_authenticators", x => x.id);
                     table.ForeignKey(
                         name: "fk_user_authenticators_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_login_configurations",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    totp_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    totp_secret_ciphertext = table.Column<byte[]>(type: "bytea", nullable: true),
+                    totp_secret_nonce = table.Column<byte[]>(type: "bytea", nullable: true),
+                    totp_key_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    totp_algorithm = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false, defaultValue: "SHA1"),
+                    totp_digits = table.Column<int>(type: "integer", nullable: false, defaultValue: 6),
+                    totp_period_seconds = table.Column<int>(type: "integer", nullable: false, defaultValue: 30),
+                    totp_drift_steps = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    totp_last_code_hash = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    totp_last_verified_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    face_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    face_provider = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    face_updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    voice_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    voice_provider = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    voice_updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_user_login_configurations", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_user_login_configurations_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -189,7 +234,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     model_version = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     liveness_threshold = table.Column<float>(type: "real", nullable: false),
                     quality_score = table.Column<float>(type: "real", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -212,7 +258,8 @@ namespace SmartAuth.Infrastructure.Migrations
                     phrase = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     sample_rate = table.Column<int>(type: "integer", nullable: false),
                     model_version = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'"),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now() at time zone 'utc'")
                 },
                 constraints: table =>
                 {
@@ -224,11 +271,6 @@ namespace SmartAuth.Infrastructure.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "ix_auth_attempts_created_at",
-                table: "auth_attempts",
-                column: "created_at");
 
             migrationBuilder.CreateIndex(
                 name: "ix_devices_user_id",
@@ -260,6 +302,12 @@ namespace SmartAuth.Infrastructure.Migrations
                 name: "ix_user_authenticators_user_id",
                 table: "user_authenticators",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_login_configurations_user_id",
+                table: "user_login_configurations",
+                column: "user_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_email",
@@ -297,6 +345,9 @@ namespace SmartAuth.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "totp_secrets");
+
+            migrationBuilder.DropTable(
+                name: "user_login_configurations");
 
             migrationBuilder.DropTable(
                 name: "voice_templates");

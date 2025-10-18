@@ -58,7 +58,8 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         Assert.NotNull(uaTypeProp);
 
         var fkUaUser = uaEt.GetForeignKeys()
-            .FirstOrDefault(fk => fk.PrincipalEntityType == userEt && fk.Properties.Any(p => p.Name == nameof(UserAuthenticator.UserId)));
+            .FirstOrDefault(fk =>
+                fk.PrincipalEntityType == userEt && fk.Properties.Any(p => p.Name == nameof(UserAuthenticator.UserId)));
         Assert.NotNull(fkUaUser);
     }
 
@@ -83,7 +84,9 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         Assert.Equal("vector(512)", faceEmbeddingColumnType);
 
         var fkFaceUa = faceEt.GetForeignKeys()
-            .FirstOrDefault(fk => fk.PrincipalEntityType == uaEt && fk.Properties.Any(p => p.Name == nameof(FaceTemplate.AuthenticatorId)));
+            .FirstOrDefault(fk =>
+                fk.PrincipalEntityType == uaEt &&
+                fk.Properties.Any(p => p.Name == nameof(FaceTemplate.AuthenticatorId)));
         Assert.NotNull(fkFaceUa);
         Assert.True(fkFaceUa!.IsUnique);
     }
@@ -109,7 +112,9 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         Assert.Equal("vector(256)", voiceEmbeddingColumnType);
 
         var fkVoiceUa = voiceEt.GetForeignKeys()
-            .FirstOrDefault(fk => fk.PrincipalEntityType == uaEt && fk.Properties.Any(p => p.Name == nameof(VoiceTemplate.AuthenticatorId)));
+            .FirstOrDefault(fk =>
+                fk.PrincipalEntityType == uaEt &&
+                fk.Properties.Any(p => p.Name == nameof(VoiceTemplate.AuthenticatorId)));
         Assert.NotNull(fkVoiceUa);
         Assert.True(fkVoiceUa!.IsUnique);
     }
@@ -120,7 +125,7 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         var model = await GetModelAsync();
         var attemptEt = model.FindEntityType(typeof(AuthAttempt));
         Assert.NotNull(attemptEt);
-        var createdAtProp = attemptEt!.FindProperty(nameof(AuthAttempt.CreatedAt));
+        var createdAtProp = attemptEt!.FindProperty(nameof(AuthAttempt.CreatedAtUtc));
         Assert.NotNull(createdAtProp);
         var createdAtIndex = attemptEt.GetIndexes().FirstOrDefault(i => i.Properties.Contains(createdAtProp));
         Assert.NotNull(createdAtIndex);

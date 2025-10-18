@@ -5,7 +5,6 @@ public sealed class FaceTemplateConfiguration : IEntityTypeConfiguration<FaceTem
     public void Configure(EntityTypeBuilder<FaceTemplate> e)
     {
         e.ToTable("face_templates");
-        e.HasKey(x => x.Id);
         e.Property(x => x.Embedding)
             .HasColumnName("embedding")           
             .HasColumnType("vector(512)")         
@@ -14,6 +13,5 @@ public sealed class FaceTemplateConfiguration : IEntityTypeConfiguration<FaceTem
         e.Property(x => x.ModelVersion).HasMaxLength(50).HasColumnName("model_version");
         e.Property(x => x.LivenessThreshold).HasColumnName("liveness_threshold");
         e.Property(x => x.QualityScore).HasColumnName("quality_score");
-        e.Property(x => x.CreatedAt).HasColumnName("created_at");
     }
 }

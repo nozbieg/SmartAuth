@@ -34,7 +34,6 @@ public static class AuthEndpoints
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 Status = UserStatus.Active,
-                CreatedAt = DateTimeOffset.UtcNow
             };
 
             db.Users.Add(user);
