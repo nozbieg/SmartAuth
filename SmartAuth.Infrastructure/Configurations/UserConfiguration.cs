@@ -2,19 +2,30 @@
 
 public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> e)
+    public void Configure(EntityTypeBuilder<User> b)
     {
-        e.ToTable("users");
-        e.Property(x => x.Email).HasMaxLength(320).IsRequired();
-        e.HasIndex(x => x.Email).IsUnique();
-        e.Property(x => x.Status).HasConversion<int>();
-        e.Property(x => x.PasswordHash).IsRequired();
-        e.Property(x => x.PasswordSalt).IsRequired();
+        b.ToTable("users");
 
-        e.HasOne(u => u.LoginConfiguration)
-            .WithOne(c => c.User)
-            .HasForeignKey<UserLoginConfiguration>(c => c.UserId)
-            .HasConstraintName("fk_user_login_configurations_users_user_id")
-            .OnDelete(DeleteBehavior.Cascade);
+        b.HasIndex(u => u.Email)
+            .IsUnique();
+
+        b.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(256);
+
+        b.Property(u => u.PasswordHash)
+            .IsRequired();
+
+        b.Property(u => u.PasswordSalt)
+            .IsRequired();
+
+        b.Property(u => u.Status)
+            .HasConversion<int>() 
+            .IsRequired()
+            .HasMaxLength(32);
+
+        b.Property(u => u.LastLoginAt)
+            .HasColumnType("timestamp with time zone")
+            .HasPrecision(3);
     }
 }

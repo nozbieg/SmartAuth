@@ -1,7 +1,5 @@
 ﻿export type FeatureFlags = {
     twofa_code: boolean;
-    twofa_face: boolean;
-    twofa_voice: boolean;
 };
 
 export async function getFeatureFlags(): Promise<FeatureFlags> {

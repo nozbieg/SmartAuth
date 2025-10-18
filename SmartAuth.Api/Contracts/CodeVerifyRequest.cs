@@ -1,2 +1,0 @@
-﻿namespace SmartAuth.Api.Contracts;
-

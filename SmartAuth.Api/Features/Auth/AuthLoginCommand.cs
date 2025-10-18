@@ -25,7 +25,6 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
         var emailNorm = req.Email.Trim().ToLowerInvariant();
 
         var user = await db.Users
-            .Include(u => u.Authenticators)
             .FirstOrDefaultAsync(u => u.Email.Equals(emailNorm, StringComparison.CurrentCultureIgnoreCase),
                 cancellationToken: ct);
 
@@ -40,8 +39,6 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
         var flags = cfg.GetSection("FeatureFlags").Get<FeatureFlags>()!;
         var methods = new List<string>();
         if (flags.twofa_code) methods.Add("code");
-        if (flags.twofa_face) methods.Add("face");
-        if (flags.twofa_voice) methods.Add("voice");
 
         user.LastLoginAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);

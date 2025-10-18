@@ -1,14 +1,10 @@
 ﻿using System.Reflection;
 using SmartAuth.Api.Utilities;
 
-namespace SmartAuth.Api.Features;
+namespace SmartAuth.Api.Endpoints.Filters;
 
-public sealed class MediatorEndpointFilter : IEndpointFilter
+public sealed class MediatorEndpointFilter(IServiceProvider sp) : IEndpointFilter
 {
-    private readonly IServiceProvider _sp;
-
-    public MediatorEndpointFilter(IServiceProvider sp) => _sp = sp;
-
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext ctx, EndpointFilterDelegate next)
     {
         var req = ctx.Arguments.FirstOrDefault(a =>
@@ -19,7 +15,7 @@ public sealed class MediatorEndpointFilter : IEndpointFilter
         if (req is null)
             return await next(ctx);
 
-        var mediator = _sp.GetRequiredService<IMediator>();
+        var mediator = sp.GetRequiredService<IMediator>();
         var response = await mediator.Send((dynamic)req, ctx.HttpContext.RequestAborted);
 
         if (response is CommandResult rNoGeneric)
