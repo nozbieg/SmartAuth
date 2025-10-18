@@ -33,7 +33,7 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         var model = await GetModelAsync();
         var userEt = model.FindEntityType(typeof(User));
         Assert.NotNull(userEt);
-        Assert.NotNull(userEt!.GetTableName());
+        Assert.NotNull(userEt.GetTableName());
 
         var emailProp = userEt.FindProperty(nameof(User.Email));
         Assert.NotNull(emailProp);
@@ -42,5 +42,21 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
             .FirstOrDefault(i => i.IsUnique && i.Properties.SequenceEqual(new[] { emailProp }));
         Assert.NotNull(emailUniqueIdx);
     }
-    
+
+    [Fact]
+    public async Task Model_UserAuthenticator_entity_configured()
+    {
+        var model = await GetModelAsync();
+        var uaEt = model.FindEntityType(typeof(UserAuthenticator));
+        Assert.NotNull(uaEt);
+        Assert.Equal("user_authenticators", uaEt.GetTableName());
+
+        var userIdProp = uaEt.FindProperty(nameof(UserAuthenticator.UserId));
+        var typeProp = uaEt.FindProperty(nameof(UserAuthenticator.Type));
+        Assert.NotNull(userIdProp);
+        Assert.NotNull(typeProp);
+
+        var uniqIdx = uaEt.GetIndexes().FirstOrDefault(i => i.IsUnique && i.Properties.SequenceEqual(new[] { userIdProp, typeProp }));
+        Assert.NotNull(uniqIdx);
+    }
 }

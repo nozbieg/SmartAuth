@@ -47,7 +47,7 @@ const RegisterPage: React.FC = () => {
 
     return (
         <AuthLayout mediaTitle="Dołącz do SmartAuth" mediaDescription="Twórz konto aby korzystać z wieloskładnikowego, nowoczesnego uwierzytelniania.">
-            <form onSubmit={onSubmit} className="form-stack" aria-describedby={err ? 'reg-error' : undefined}>
+            <form onSubmit={onSubmit} className={"form"} aria-describedby={err ? 'reg-error' : undefined}>
                 <div className="auth-panel-header">
                     <h1>Rejestracja</h1>
                     <p className="subtitle">Wypełnij poniższe pola aby utworzyć konto.</p>
@@ -58,28 +58,28 @@ const RegisterPage: React.FC = () => {
                 <div className="form-grid">
                     <div className="form-control">
                         <label htmlFor="email">Email</label>
-                        <input id="email" type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required/>
+                        <input id="email" type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required />
                     </div>
                     <div className="form-control">
                         <label htmlFor="displayName">Imię i nazwisko / nazwa</label>
-                        <input id="displayName" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} required/>
+                        <input id="displayName" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} required />
                     </div>
                     <div className="form-control">
                         <label htmlFor="password">Hasło (min. 8 znaków)</label>
-                        <input id="password" type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} required/>
+                        <input id="password" type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} required />
                     </div>
                     <div className="form-control">
                         <label htmlFor="password2">Powtórz hasło</label>
-                        <input id="password2" type="password" autoComplete="new-password" value={password2} onChange={e => setPassword2(e.target.value)} required/>
+                        <input id="password2" type="password" autoComplete="new-password" value={password2} onChange={e => setPassword2(e.target.value)} required />
                     </div>
                 </div>
 
-                <label className="inline" style={{fontSize:'.75rem'}}>
+                <label className="inline-accept">
                     <input type="checkbox" checked={accept} onChange={e => setAccept(e.target.checked)} />
                     <span>Akceptuję regulamin i politykę prywatności</span>
                 </label>
 
-                <div className="actions-col">
+                <div className="form-actions">
                     <Button type="submit" variant="primary" disabled={busy}>{busy ? 'Rejestruję...' : 'Utwórz konto'}</Button>
                     <div className="helper-text">Masz już konto? <Link to="/login" className="link-inline">Zaloguj się</Link></div>
                 </div>

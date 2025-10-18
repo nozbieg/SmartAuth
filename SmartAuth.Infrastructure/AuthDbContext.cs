@@ -6,6 +6,7 @@ namespace SmartAuth.Infrastructure;
 public class AuthDbContext(DbContextOptions<AuthDbContext> options, TimeProvider timeProvider) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserAuthenticator> UserAuthenticators => Set<UserAuthenticator>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

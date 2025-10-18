@@ -5,6 +5,8 @@ using SmartAuth.Api.Extensions;
 using SmartAuth.Api.HealthChecks;
 using SmartAuth.Api.Startup;
 using SmartAuth.ServiceDefaults;
+using SmartAuth.Api.Utilities;
+using SmartAuth.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,8 @@ builder.Services.AddHealthChecks()
     .AddCheck<PendingMigrationsHealthCheck>(name: "migrations", tags: ["ready"]);
 
 builder.Services.AddHostedService<MigrationRunnerHostedService>();
+builder.Services.Configure<TotpOptions>(builder.Configuration.GetSection("Totp"));
+builder.Services.AddSingleton<IMicrosoftAuthenticatorClient, MicrosoftAuthenticatorClient>();
 
 var app = builder.Build();
 

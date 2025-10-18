@@ -1,22 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SmartAuth.Api.Features.Auth;
+﻿using SmartAuth.Api.Features.Auth;
 using SmartAuth.Api.Utilities;
 using SmartAuth.Domain.Entities;
-using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Commons;
+using SmartAuth.Tests.Helpers;
 
 namespace SmartAuth.Tests.Tests;
 
 public sealed class AuthRegisterCommandTests(PostgresContainerFixture fx) : IClassFixture<PostgresContainerFixture>
 {
     private readonly string _cs = fx.ConnectionString;
-
-    private async Task<AuthDbContext> MigrateAndGetDb(IServiceProvider sp)
-    {
-        var db = sp.GetRequiredService<AuthDbContext>();
-        await db.Database.MigrateAsync();
-        return db;
-    }
 
     [Fact]
     public async Task Validation_error_when_email_missing()
@@ -44,10 +36,9 @@ public sealed class AuthRegisterCommandTests(PostgresContainerFixture fx) : ICla
     public async Task Conflict_when_email_already_exists_case_insensitive()
     {
         var (mediator, sp) = fx.DefaultAuth;
-        var db = await MigrateAndGetDb(sp);
+        var db = await TestSetup.EnsureMigratedAsync(sp);
         var (hash, salt) = AuthCrypto.HashPassword("Passw0rd!");
-        db.Users.Add(new User
-            { Email = "reguser@example.com", PasswordHash = hash, PasswordSalt = salt, Status = UserStatus.Active });
+        db.Users.Add(new User { Email = "reguser@example.com", PasswordHash = hash, PasswordSalt = salt, Status = UserStatus.Active });
         await db.SaveChangesAsync();
 
         var cmd = new AuthRegisterCommand("RegUser@Example.com", "Passw0rd!", null);
@@ -60,7 +51,7 @@ public sealed class AuthRegisterCommandTests(PostgresContainerFixture fx) : ICla
     public async Task Success_creates_user_and_hashes_password()
     {
         var (mediator, sp) = fx.DefaultAuth;
-        var db = await MigrateAndGetDb(sp);
+        var db = await TestSetup.EnsureMigratedAsync(sp);
         var email = $"new_{Guid.NewGuid():N}@example.com";
         var cmd = new AuthRegisterCommand(email, "Passw0rd!", "Display");
         var res = await mediator.Send<CommandResult<RegisterCompleted>>(cmd);

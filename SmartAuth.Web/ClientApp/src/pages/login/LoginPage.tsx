@@ -1,12 +1,13 @@
 ﻿import React, {useState} from "react";
 import {useFeatureFlags} from "../../auth/FeatureFlagsContext";
-import {loginWithPassword, saveJwt, verifyCode, ApiError} from "../../auth/AuthService";
+import {loginWithPassword, saveJwt, ApiError} from "../../auth/AuthService";
 import {useNavigate, Link} from "react-router-dom";
 import AuthLayout from "../../components/layout/AuthLayout";
 import Button from "../../components/ui/Button";
+import TotpVerifyForm from '../../components/twofa/TotpVerifyForm';
 
 type Step = "credentials" | "twofa";
-type TwoFAMethod = "code" | "face" | "voice";
+type TwoFAMethod = "code" | "totp" | "face" | "voice";
 
 const LoginPage: React.FC = () => {
     const nav = useNavigate();
@@ -19,7 +20,6 @@ const LoginPage: React.FC = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [code, setCode] = useState("");
 
     const [err, setErr] = useState<string | null>(null);
     const [info, setInfo] = useState<string | null>(null);
@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
         try {
             const res = await loginWithPassword(email.trim(), password); // LoginResponse
             if (res.requires2Fa) {
-                const methods = (res.methods ?? []).filter(m => m === "code" && !!flags?.twofa_code) as TwoFAMethod[];
+                const methods = (res.methods ?? []).filter(m => (m === "code" && !!flags?.twofa_code) || m === "totp") as TwoFAMethod[];
                 if (methods.length === 0) {
                     setErr("Brak dostępnych metod 2FA.");
                     return;
@@ -69,45 +69,19 @@ const LoginPage: React.FC = () => {
             setBusy(false);
         }
     }
-
-    async function onVerifyCode(e: React.FormEvent) {
-        e.preventDefault();
-        if (!tempToken || busy) return;
-        setErr(null);
-        setInfo(null);
-        setFieldErrors({});
-        setBusy(true);
-        try {
-            const {jwt} = await verifyCode(tempToken, code.trim());
-            saveJwt(jwt);
-            nav("/home", {replace: true});
-        } catch (e: any) {
-            if (e instanceof ApiError) {
-                setErr(e.message);
-                if (e.metadata) setFieldErrors(e.metadata);
-            } else {
-                setErr(e?.message ?? "Błąd weryfikacji kodu");
-            }
-        } finally {
-            setBusy(false);
-        }
-    }
-
     function resetToCredentials() {
         setStep("credentials");
         setTempToken(null);
         setAllowed([]);
         setSelected("");
-        setCode("");
         setInfo(null);
         setErr(null);
         setFieldErrors({});
     }
 
-    // ------------------- UI fragments -------------------
     function renderCredentialsForm() {
         return (
-            <form onSubmit={onSubmitCredentials} className="form-stack"
+            <form onSubmit={onSubmitCredentials} className="form"
                   aria-describedby={err ? "login-error" : undefined}>
                 <div className="auth-panel-header">
                     <h1>Logowanie</h1>
@@ -130,7 +104,7 @@ const LoginPage: React.FC = () => {
                         { (fieldErrors.Password || fieldErrors.password) && <small className="field-error">{fieldErrors.Password || fieldErrors.password}</small> }
                     </div>
                 </div>
-                <div className="actions-col">
+                <div className="form-actions">
                     <Button type="submit" variant="primary"
                             disabled={busy}>{busy ? 'Logowanie...' : 'Zaloguj się'}</Button>
                     <div className="helper-text">Nie masz konta? <Link to="/register" className="link-inline">Zarejestruj
@@ -142,7 +116,7 @@ const LoginPage: React.FC = () => {
 
     function renderMethodSelector() {
         return (
-            <div className="twofa-methods" role="tablist" aria-label="Dostępne metody 2FA">
+            <div className="method-tabs" role="tablist" aria-label="Dostępne metody 2FA">
                 {allowedMethods.map(m => (
                     <button
                         key={m}
@@ -150,7 +124,7 @@ const LoginPage: React.FC = () => {
                         role="tab"
                         aria-selected={selectedMethod === m}
                         aria-pressed={selectedMethod === m}
-                        className="btn method-btn"
+                        className="method-btn"
                         onClick={() => setSelected(m)}
                         disabled={busy}
                     >
@@ -163,7 +137,7 @@ const LoginPage: React.FC = () => {
 
     function renderTwoFa() {
         return (
-            <div className="form-stack">
+            <div className="form">
                 <div className="auth-panel-header">
                     <h1>Drugi krok</h1>
                     <p className="subtitle">Wybierz i potwierdź jedną z dostępnych metod.</p>
@@ -171,25 +145,9 @@ const LoginPage: React.FC = () => {
                 {err && <div className="alert alert-danger" role="alert">{err}</div>}
                 {info && !err && <div className="alert alert-info" role="status">{info}</div>}
                 {renderMethodSelector()}
-
-                {selectedMethod === "code" && (
-                    <form onSubmit={onVerifyCode} className="form-stack" aria-label="Weryfikacja kodu">
-                        <div className="form-control">
-                            <label htmlFor="twofa-code">Kod jednorazowy</label>
-                            <input id="twofa-code" maxLength={6} inputMode="numeric" autoComplete="one-time-code"
-                                   placeholder="123456" className="code-input" value={code}
-                                   aria-invalid={!!fieldErrors.Code || !!fieldErrors.code}
-                                   onChange={e => setCode(e.target.value)} required/>
-                            { (fieldErrors.Code || fieldErrors.code) && <small className="field-error">{fieldErrors.Code || fieldErrors.code}</small> }
-                            <span className="helper-text">Sprawdź aplikację 2FA.</span>
-                        </div>
-                        <div className="split-actions">
-                            <Button type="submit" variant="primary"
-                                    disabled={busy}>{busy ? 'Weryfikuję...' : 'Potwierdź kod'}</Button>
-                            <Button type="button" variant="outline" onClick={resetToCredentials}
-                                    disabled={busy}>Wróć</Button>
-                        </div>
-                    </form>
+                
+                {selectedMethod === "totp" && tempToken && (
+                    <TotpVerifyForm tempToken={tempToken} onSuccess={(jwt) => { saveJwt(jwt); nav('/home',{replace:true}); }} onCancel={resetToCredentials} />
                 )}
             </div>
         );

@@ -31,5 +31,10 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         b.Property(u => u.LastLoginAt)
             .HasColumnType("timestamp with time zone")
             .HasPrecision(3);
+
+        b.HasMany(u => u.Authenticators)
+            .WithOne(a => a.User!)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

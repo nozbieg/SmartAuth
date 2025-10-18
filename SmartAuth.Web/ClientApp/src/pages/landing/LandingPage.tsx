@@ -4,6 +4,7 @@ import { getJwt, logout } from "../../auth/AuthService";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../../components/layout/AppLayout";
 import Card from "../../components/ui/Card";
+import TotpConfig from "../../components/twofa/TotpConfig";
 
 interface Claims {
     sub: string;
@@ -43,9 +44,7 @@ const LandingPage: React.FC = () => {
                         <li><span className="meta-label">wygasa:</span><span>{claims ? new Date(claims.exp * 1000).toLocaleString() : '-'}</span></li>
                     </ul>
                 </Card>
-                <Card title="Skróty" headingLevel={2}>
-                    <p>Tu w przyszłości pojawią się kafelki do modułów systemu, konfiguracji 2FA oraz analityki bezpieczeństwa.</p>
-                </Card>
+                <TotpConfig />
             </div>
         </AppLayout>
     );

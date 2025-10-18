@@ -13,8 +13,11 @@ public static class AuthEndpoints
 
         auth.MapPost("/register", (AuthRegisterCommand req) => req);
         auth.MapPost("/login", (AuthLoginCommand req) => req);
-        auth.MapPost("/2fa/code/verify", (TwoFaCodeVerifyCommand req) => req)
-            .RequireAuthorization();
+        auth.MapPost("/2fa/code/verify", (TwoFaCodeVerifyCommand req) => req).RequireAuthorization();
+        auth.MapPost("/2fa/totp/setup", (TwoFaTotpSetupCommand req) => req).RequireAuthorization();
+        auth.MapPost("/2fa/totp/enable", (TwoFaTotpEnableCommand req) => req).RequireAuthorization();
+        auth.MapPost("/2fa/totp/disable", (TwoFaTotpDisableCommand req) => req).RequireAuthorization();
+        auth.MapGet("/2fa/totp/status", () => new TwoFaTotpStatusQuery()).RequireAuthorization();
 
         return app;
     }
