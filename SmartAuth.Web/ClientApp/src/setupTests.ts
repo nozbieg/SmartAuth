@@ -1,3 +1,3 @@
-﻿// globalny setup testów
+﻿// Globalne setupy dla testów
 import '@testing-library/jest-dom';
 
