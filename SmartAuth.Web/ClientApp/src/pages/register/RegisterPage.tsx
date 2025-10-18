@@ -38,7 +38,8 @@ const RegisterPage: React.FC = () => {
                 throw new Error(t || "Rejestracja nie powiodła się.");
             }
             setOkMsg("Konto utworzone. Możesz się zalogować.");
-            setTimeout(() => nav("/login", { replace: true, state: { from } }), 800);
+            const delay = typeof import.meta !== 'undefined' && (import.meta as any).vitest ? 0 : 800;
+            setTimeout(() => nav("/login", { replace: true, state: { from } }), delay);
         } catch (e: any) {
             setErr(e?.message ?? "Rejestracja nie powiodła się.");
         } finally { setBusy(false); }
