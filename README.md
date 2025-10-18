@@ -1,6 +1,6 @@
 ﻿# SmartAuth
 
-Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL (z rozszerzeniem `pgvector`) i SPA (React + Vite). Aktualna konfiguracja wspiera klasyczne logowanie e‑mail + hasło oraz przygotowanie pod wieloskładnikowe (kod 2FA – makieta).
+Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL (z rozszerzeniem `pgvector`) i SPA (React + Vite). Aktualna konfiguracja wspiera klasyczne logowanie e‑mail + hasło oraz etapowy model wieloskładnikowy (kod 2FA – placeholder oraz wstępna konfiguracja TOTP w interfejsie).
 
 ## Spis treści
 1. Cel projektu
@@ -20,10 +20,12 @@ Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL 
 15. Bezpieczeństwo – uwagi
 16. FAQ / Troubleshooting
 17. Następne kroki (roadmap sugestii)
+18. Skrócone komendy (cheat‑sheet)
+19. Pokrycie testów (coverage)
 
 ---
 ## 1. Cel projektu
-Pokazanie modułowego podejścia do uwierzytelniania użytkownika z możliwością stopniowego włączania kolejnych metod 2FA (kod, biometria – twarz/głos) i wykorzystaniem wektorów (pgvector) w przyszłych funkcjach podobieństw/embeddings.
+Pokazanie modułowego podejścia do uwierzytelniania użytkownika z możliwością stopniowego włączania kolejnych metod 2FA (kod, TOTP, biometria – twarz/głos) i wykorzystaniem wektorów (pgvector) w przyszłych funkcjach podobieństw/embeddings.
 
 ## 2. Architektura i moduły
 Struktura solution:
@@ -107,7 +109,6 @@ ConnectionStrings__authdb=Host=localhost;Port=5432;Database=authdb;Username=post
 ```
 dotnet run --project SmartAuth.Api
 set ASPNETCORE_URLS=http://localhost:5200
-REM powyżej opcjonalnie
 
 cd SmartAuth.Web
 dotnet run
@@ -152,8 +153,8 @@ Uwaga: Implementacja posiada klasę `FeatureFlagsConfig` która obecnie zwraca `
 - Logowanie:
   1. Weryfikacja e‑mail/hasło.
   2. Jeśli brak aktywnych metod 2FA -> wydanie finalnego JWT (access token).
-  3. Jeśli są metody 2FA -> wydanie tokenu tymczasowego (temp JWT) + lista metod (np. `["code"]`).
-- Weryfikacja 2FA (kod): wymaga nagłówka `Authorization: Bearer <temp_token>` i kodu (obecnie makieta – akceptuje tylko `123456`). Sukces -> wydanie finalnego JWT.
+  3. Jeśli są metody 2FA -> wydanie tokenu tymczasowego (temp JWT) + lista metod (np. `['code']` / w przyszłości `['totp']`).
+- Weryfikacja 2FA (kod): wymaga nagłówka `Authorization: Bearer <temp_token>` i kodu (obecnie placeholder – akceptuje tylko `123456`). Sukces -> wydanie finalnego JWT.
 
 Schemat tokenów:
 - Temp token – krótszy TTL (`TempTokenMinutes`), claim `typ=temp`.
@@ -251,6 +252,21 @@ npm run test:ui   REM interfejs web Vitest
 ```
 Środowisko testowe: jsdom + Testing Library.
 
+Zakres testów (Vitest + @testing-library/react):
+- Strony: `LoginPage`, `RegisterPage`, `LandingPage`.
+- Komponenty układu: `AuthLayout`, `AppLayout`, `Footer`.
+- UI: `Card`, `Button`.
+- 2FA: `TotpConfig` (konfiguracja TOTP – front-endowy przepływ), `TotpVerifyForm` (weryfikacja kodu).
+- Kontekst: `FeatureFlagsContext` (ładowanie i obsługa błędów).
+- Routing / kontrola dostępu: `RouteGuard`.
+- Commons: `featureFlags` (pobranie JSON z API).
+
+Uruchomienie z raportem pokrycia:
+```
+npm test -- --coverage
+```
+Raport: `text` + `lcov` (konfig w `vitest.config.ts`).
+
 ## 13. Health-checki i observability
 - Live: podstawowy self-check tag `live`.
 - Ready: DB connectivity, DbContext, brak pending migracji.
@@ -277,7 +293,7 @@ AppHost jest głównie trybem deweloperskim. Do produkcji można:
 - Klucz JWT w repo to TYLKO DEV. Zmień na silny sekret (co najmniej 256‑bit) i trzymaj w menedżerze sekretów / zmiennych środowiskowych (Azure Key Vault, AWS KMS itp.).
 - PBKDF2 parametry: Iterations = 100 000, KeySize = 32, SaltSize = 16 – można zwiększyć w produkcji w zależności od profilu wydajności.
 - Brak rate limiting / lockout przy błędach logowania – dodać.
-- Kod 2FA makieta (stała wartość `123456`) – wymienić na TOTP (RFC 6238) lub dostawę SMS/E-mail/push.
+- Kod 2FA placeholder (stała wartość `123456`) – wymienić na prawdziwy TOTP (RFC 6238) lub dostawę SMS/E-mail/push.
 - Rozważyć rotację kluczy oraz JWK endpoint do walidacji (jeśli w przyszłości microservices).
 
 ## 16. FAQ / Troubleshooting
@@ -288,6 +304,7 @@ AppHost jest głównie trybem deweloperskim. Do produkcji można:
 | Brak Swagger | Upewnij się że środowisko to `Development` lub swagger nie został wyłączony. |
 | 2FA zawsze wymaga kodu / zawsze brak | Zweryfikuj flagę `FeatureFlags.twofa_code` oraz implementację `FeatureFlagsConfig`. |
 | SPA nie ładuje API | Sprawdź w konsoli przeglądarki port API, CORS (jeśli rozdzielone), oraz temp JWT vs final JWT. |
+| Pokrycie frontendu 0% | Użyj `npm test -- --coverage` po wcześniejszym `npm ci`. |
 
 ## 17. Następne kroki (sugestie)
 - Prawdziwy moduł TOTP (np. RFC 6238) + generacja i provisioning (QR code).
@@ -297,6 +314,7 @@ AppHost jest głównie trybem deweloperskim. Do produkcji można:
 - Obsługa face/voice (embeddingi) z wykorzystaniem pgvector.
 - Dodanie testów kontraktowych (Swagger / NSwag) i testów E2E (Playwright / Cypress) dla SPA.
 - Hardening nagłówków HTTP (SecurityHeadersMiddleware).
+- Skanowanie zależności (GitHub Dependabot / Snyk) + tajne skanowanie (secret scanning).
 
 ## 18. Skrócone komendy (cheat‑sheet)
 ```
@@ -312,12 +330,19 @@ cd SmartAuth.Web\ClientApp && npm run dev
 REM Testy frontendu
 cd SmartAuth.Web\ClientApp && npm test
 
+REM Pokrycie frontendu
+cd SmartAuth.Web\ClientApp && npm test -- --coverage
+
 REM Tworzenie migracji
 dotnet ef migrations add <Name> -p SmartAuth.Infrastructure -s SmartAuth.Api
 
 REM Publikacja Web (SPA embedded)
 dotnet publish SmartAuth.Web -c Release -o publish/web
 ```
+
+## 19. Pokrycie testów (coverage)
+Frontend: raport tekstowy i `lcov` (do integracji z narzędziami pokrycia / badge). Lokalizacja w katalogu projektu po uruchomieniu `npm test -- --coverage`.
+Backend: użyj parametrów Coverlet (`CollectCoverage=true`, `CoverletOutputFormat=opencover`). Możliwe rozszerzenie o raport HTML (narzędzia zewnętrzne np. ReportGenerator).
 
 ---
 Happy coding! Jeśli czegoś brakuje – rozbuduj README wraz z ewolucją projektu.
