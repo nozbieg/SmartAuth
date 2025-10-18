@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartAuth.Domain.Entities;
-using SmartAuth.Infrastructure;
-using SmartAuth.Infrastructure.Security;
-
-namespace SmartAuth.Api.Startup;
+﻿namespace SmartAuth.Api.Startup;
 
 public sealed class MigrationRunnerHostedService(IServiceProvider sp, ILogger<MigrationRunnerHostedService> log)
     : IHostedService

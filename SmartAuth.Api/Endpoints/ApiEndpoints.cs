@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using SmartAuth.Api.Contracts;
+using SmartAuth.Api.Features.User;
 using SmartAuth.Api.Utilities;
 using SmartAuth.Domain.Entities;
 using SmartAuth.Infrastructure;
+using SmartAuth.Infrastructure.Commons;
 using SmartAuth.Infrastructure.Security;
 
 namespace SmartAuth.Api.Endpoints;
@@ -12,16 +14,10 @@ public static class ApiEndpoints
 {
     public static WebApplication UseApiEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/users", async (AuthDbContext db, CreateUserDto dto) =>
+        app.MapPost("/api/users", async (IMediator mediator, CreateUserCommand request) =>
         {
-            var exists = await db.Users.AnyAsync(u => u.Email == dto.Email);
-            if (exists) return Results.Conflict("Email already registered");
-
-            var (hash, salt) = Passwords.Hash(dto.Password);
-            var user = new User { Email = dto.Email, PasswordHash = hash, PasswordSalt = salt };
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-            return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
+            var result = await mediator.Send(request);
+            return result.ToIResult();
         });
 
         app.MapPost("/api/authenticators", async (AuthDbContext db, AddAuthenticatorDto dto, ClaimsPrincipal _) =>
