@@ -50,7 +50,7 @@ describe('LoginPage', () => {
     await waitFor(() => expect(AuthService.saveJwt).toHaveBeenCalledWith('final-jwt'));
   });
 
-  it('przechodzi do kroku 2FA gdy wymagana i wyświetla formularz kodu', async () => {
+  it('przechodzi do kroku 2FA i pokazuje selektor metod', async () => {
     (AuthService.loginWithPassword as any).mockResolvedValue({ requires2Fa: true, token: 'temp-token', methods: ['code'] });
     renderLogin();
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'user2@example.com' } });
@@ -58,11 +58,11 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Zaloguj się/i }));
 
     await screen.findByRole('heading', { name: /Drugi krok/i });
-    expect(screen.getByLabelText(/Kod jednorazowy/i)).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /CODE/i })).toBeInTheDocument();
   });
 
-  it('weryfikuje kod 2FA i zapisuje końcowy jwt', async () => {
-    (AuthService.loginWithPassword as any).mockResolvedValue({ requires2Fa: true, token: 'temp-token', methods: ['code'] });
+  it('weryfikuje kod TOTP i zapisuje końcowy jwt', async () => {
+    (AuthService.loginWithPassword as any).mockResolvedValue({ requires2Fa: true, token: 'temp-token', methods: ['totp'] });
     (AuthService.verifyCode as any).mockResolvedValue({ jwt: 'final-jwt-2' });
 
     renderLogin();
@@ -71,8 +71,8 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Zaloguj się/i }));
 
     await screen.findByRole('heading', { name: /Drugi krok/i });
-    fireEvent.change(screen.getByLabelText(/Kod jednorazowy/i), { target: { value: '123456' } });
-    fireEvent.click(screen.getByRole('button', { name: /Potwierdź kod/i }));
+    fireEvent.change(screen.getByLabelText(/Kod TOTP/i), { target: { value: '123456' } });
+    fireEvent.click(screen.getByRole('button', { name: /Potwierdź TOTP/i }));
 
     await waitFor(() => expect(AuthService.verifyCode).toHaveBeenCalledWith('temp-token', '123456'));
     expect(AuthService.saveJwt).toHaveBeenCalledWith('final-jwt-2');

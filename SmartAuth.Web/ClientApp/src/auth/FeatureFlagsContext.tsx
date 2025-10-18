@@ -17,6 +17,12 @@ export const FeatureFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             try {
                 const f = await getFeatureFlags();
                 if (mounted) setFlags(f);
+            } catch (e) {
+                // Ignorujemy błąd - konsumenci zobaczą flags === null
+                if (process.env.NODE_ENV === 'development') {
+                    // eslint-disable-next-line no-console
+                    console.warn('Nie udało się pobrać flag funkcjonalnych', e);
+                }
             } finally {
                 if (mounted) setLoading(false);
             }

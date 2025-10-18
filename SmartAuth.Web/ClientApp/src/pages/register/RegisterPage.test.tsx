@@ -86,7 +86,7 @@ describe('RegisterPage', () => {
         (globalThis as any).fetch = fetchMock;
 
         setup();
-        await userEvent.type(screen.getByLabelText(/Email/i), ' john@example.com '); // test trim
+        await userEvent.type(screen.getByLabelText(/Email/i), ' john@example.com ');
         await userEvent.type(screen.getByLabelText(/Imię i nazwisko/i), ' John Doe ');
         await userEvent.click(screen.getByRole('checkbox'));
         await userEvent.type(screen.getByLabelText(/Hasło \(min. 8 znaków\)/i), '12345678');
