@@ -26,6 +26,15 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options, TimeProvider
             }
         }
 
+        foreach (var ue in ChangeTracker.Entries<User>())
+        {
+            if (ue.State is EntityState.Added or EntityState.Modified)
+            {
+                if (!string.IsNullOrWhiteSpace(ue.Entity.Email))
+                    ue.Entity.Email = ue.Entity.Email.Trim().ToLowerInvariant();
+            }
+        }
+
         return base.SaveChangesAsync(cancellationToken);
     }
 

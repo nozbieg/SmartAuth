@@ -1,6 +1,17 @@
 ﻿namespace SmartAuth.Infrastructure.Commons;
 
-public readonly struct CommandResult<T>
+public interface ICommandResult
+{
+    bool IsSuccess { get; }
+    Error? Error { get; }
+}
+
+public interface ICommandResult<out T> : ICommandResult
+{
+    T? Value { get; }
+}
+
+public readonly struct CommandResult<T> : ICommandResult<T>
 {
     public bool IsSuccess { get; }
     public T? Value { get; }
@@ -24,7 +35,7 @@ public readonly struct CommandResult<T>
     public static CommandResult<T> Fail(Error error) => new(error);
 }
 
-public readonly struct CommandResult
+public readonly struct CommandResult : ICommandResult
 {
     public bool IsSuccess { get; }
     public Error? Error { get; }

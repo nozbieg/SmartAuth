@@ -35,6 +35,7 @@ body { background: var(--color-bg-alt); color: var(--color-text); font-family: s
 .form-control input, .form-control select { border:1px solid var(--color-border); background: var(--color-bg); border-radius: var(--radius-md); padding:.7rem .85rem; font:inherit; line-height:1.25; color:inherit; transition: border-color .18s, background .18s, box-shadow .18s; }
 .form-control input:focus, .form-control select:focus { outline:none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 .form-control input[disabled] { background: #f1f3f6; cursor:not-allowed; }
+.form-control input[aria-invalid=true], .form-control select[aria-invalid=true] { border-color:#d92d20; background:#fff5f5; }
 
 .helper-text { font-size:.7rem; color: var(--color-text-muted); }
 
@@ -98,3 +99,5 @@ footer.page-footer { margin-top:auto; padding:1rem 1.25rem; font-size:.7rem; tex
 .meta-list { list-style:none; padding:0; margin:.25rem 0 0; font-size:.75rem; line-height:1.4; }
 .meta-list li { display:flex; gap:.35rem; }
 .meta-label { font-weight:600; }
+
+.field-error { font-size:.65rem; color:#a7362e; line-height:1.2; }

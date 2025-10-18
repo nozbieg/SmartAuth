@@ -12,7 +12,7 @@ public class AuthRegisterValidator : Validator<AuthRegisterCommand>
     protected override Task ValidateParams(AuthRegisterCommand request)
     {
         if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email is required");
-        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Email), "Password is required");
+        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Password is required");
         return Task.CompletedTask;
     }
 }
@@ -24,7 +24,7 @@ public class AuthRegisterCommandHandler(AuthDbContext db)
     {
         var emailNorm = req.Email.Trim().ToLowerInvariant();
 
-        var exists = await db.Users.AnyAsync(u => u.Email.Equals(emailNorm, StringComparison.CurrentCultureIgnoreCase), cancellationToken: ct);
+        var exists = await db.Users.AnyAsync(u => u.Email.ToLower() == emailNorm, cancellationToken: ct);
         if (exists)
             return CommandResult<RegisterCompleted>.Fail(Errors.Conflict(nameof(req.Email)));
 
@@ -32,7 +32,7 @@ public class AuthRegisterCommandHandler(AuthDbContext db)
 
         var user = new Domain.Entities.User
         {
-            Email = req.Email.Trim(),
+            Email = emailNorm,
             PasswordHash = hash,
             PasswordSalt = salt,
             Status = UserStatus.Active,

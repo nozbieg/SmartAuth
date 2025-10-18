@@ -26,4 +26,8 @@
     <Compile Remove="Extensions\HealthEndpoints.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
 </Project>

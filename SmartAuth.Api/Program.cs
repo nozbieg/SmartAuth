@@ -3,7 +3,6 @@ using SmartAuth.Api.Endpoints;
 using SmartAuth.Api.Endpoints.Filters;
 using SmartAuth.Api.Extensions;
 using SmartAuth.Api.HealthChecks;
-using SmartAuth.Api.Middlewares;
 using SmartAuth.Api.Startup;
 using SmartAuth.ServiceDefaults;
 
@@ -34,7 +33,7 @@ builder.Services.AddHostedService<MigrationRunnerHostedService>();
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-app.UseMiddleware<TraceHeadersMiddleware>();
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

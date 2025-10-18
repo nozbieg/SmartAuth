@@ -23,10 +23,8 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
     public async Task<CommandResult<AuthLoginResult>> Handle(AuthLoginCommand req, CancellationToken ct)
     {
         var emailNorm = req.Email.Trim().ToLowerInvariant();
-
         var user = await db.Users
-            .FirstOrDefaultAsync(u => u.Email.Equals(emailNorm, StringComparison.CurrentCultureIgnoreCase),
-                cancellationToken: ct);
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == emailNorm, ct);
 
         if (user is null)
             return CommandResult<AuthLoginResult>.Fail(Errors.NotFound(nameof(Domain.Entities.User), emailNorm));

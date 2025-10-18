@@ -4,14 +4,18 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> b)
     {
-        b.ToTable("users");
+        b.ToTable("users", t =>
+        {
+            t.HasCheckConstraint("ck_users_email_lowercase", "email = lower(email)");
+        });
 
         b.HasIndex(u => u.Email)
             .IsUnique();
 
         b.Property(u => u.Email)
             .IsRequired()
-            .HasMaxLength(256);
+            .HasMaxLength(256)
+            .HasConversion(v => v.Trim().ToLowerInvariant(), v => v);
 
         b.Property(u => u.PasswordHash)
             .IsRequired();

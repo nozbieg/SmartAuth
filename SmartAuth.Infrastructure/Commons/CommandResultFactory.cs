@@ -14,7 +14,7 @@ internal static class CommandResultFactory
         if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(CommandResult<>))
         {
             var genericArg = t.GetGenericArguments()[0];
-            var method = typeof(CommandResult)
+            var method = typeof(CommandResultFactory)
                 .GetMethod(nameof(FailGeneric), BindingFlags.Static | BindingFlags.NonPublic)!
                 .MakeGenericMethod(genericArg);
 

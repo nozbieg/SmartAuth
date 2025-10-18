@@ -1,6 +1,6 @@
 ﻿namespace SmartAuth.Infrastructure.Commons;
 
-public interface IValidator<in TRequest>
+public interface IValidator<TRequest>
 {
     Task<Error?> Validate(TRequest request, CancellationToken ct);
 }
@@ -11,6 +11,7 @@ public abstract class Validator<TRequest> : IValidator<TRequest>
 
     public virtual async Task<Error?> Validate(TRequest request, CancellationToken ct)
     {
+        if (Metadata.Count > 0) Metadata.Clear();
         await ValidateParams(request);
         return Metadata.Count == 0
             ? null

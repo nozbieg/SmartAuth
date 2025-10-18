@@ -28,4 +28,19 @@ public sealed class UserTests(PostgresContainerFixture fx) : IClassFixture<Postg
         db.Users.Add(new User { Email = "alice@example.com", PasswordHash = hash, PasswordSalt = salt });
         await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync());
     }
+
+    [Fact]
+    public async Task Email_is_normalized_to_lowercase_on_save()
+    {
+        await using var db = DbContextFactory.Create(_cs);
+        await db.Database.MigrateAsync();
+
+        var (hash, salt) = Passwords.Hash("Passw0rd!");
+        var mixed = "User.MixedCase+Tag@Example.COM";
+        db.Users.Add(new User { Email = mixed, PasswordHash = hash, PasswordSalt = salt });
+        await db.SaveChangesAsync();
+
+        var stored = await db.Users.FirstAsync(u => u.Email == mixed.ToLowerInvariant());
+        Assert.Equal(mixed.ToLowerInvariant(), stored.Email);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using SmartAuth.Api.Features.Auth;
+﻿using SmartAuth.Api.Endpoints.Filters;
+using SmartAuth.Api.Features.Auth;
 
 namespace SmartAuth.Api.Endpoints;
 
@@ -8,7 +9,7 @@ public static class AuthEndpoints
     {
         var auth = app.MapGroup("/api/auth");
         auth.WithTags("Auth")
-            .AddEndpointFilterFactory((context, next) => async invocationContext => await next(invocationContext));
+            .AddEndpointFilter<MediatorEndpointFilter>();
 
         auth.MapPost("/register", (AuthRegisterCommand req) => req);
         auth.MapPost("/login", (AuthLoginCommand req) => req);
