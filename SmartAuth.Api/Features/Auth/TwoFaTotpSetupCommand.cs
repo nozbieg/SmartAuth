@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using SmartAuth.Api.Utilities;
-using SmartAuth.Infrastructure.Security;
 using QRCoder;
 using SmartAuth.Api.Services;
 
 namespace SmartAuth.Api.Features.Auth;
 
 public record TwoFaTotpSetupCommand(bool ForceRestart = false) : IRequest<CommandResult<TwoFaTotpSetupResult>>;
+
 public record TwoFaTotpSetupResult(Guid SetupId, string Secret, string OtpAuthUri, string QrImageBase64);
 
 public class TwoFaTotpSetupValidator : Validator<TwoFaTotpSetupCommand>
@@ -14,7 +14,11 @@ public class TwoFaTotpSetupValidator : Validator<TwoFaTotpSetupCommand>
     protected override Task ValidateParams(TwoFaTotpSetupCommand request) => Task.CompletedTask;
 }
 
-public class TwoFaTotpSetupCommandHandler(AuthDbContext db, IHttpContextAccessor accessor, IMicrosoftAuthenticatorClient msClient, IOptions<TotpOptions> totpOptions)
+public class TwoFaTotpSetupCommandHandler(
+    AuthDbContext db,
+    IHttpContextAccessor accessor,
+    IMicrosoftAuthenticatorClient msClient,
+    IOptions<TotpOptions> totpOptions)
     : IRequestHandler<TwoFaTotpSetupCommand, CommandResult<TwoFaTotpSetupResult>>
 {
     public async Task<CommandResult<TwoFaTotpSetupResult>> Handle(TwoFaTotpSetupCommand req, CancellationToken ct)
@@ -65,7 +69,6 @@ public class TwoFaTotpSetupCommandHandler(AuthDbContext db, IHttpContextAccessor
         db.UserAuthenticators.Add(auth);
         await db.SaveChangesAsync(ct);
 
-        // Generacja QR (PNG base64)
         using var qrGen = new QRCodeGenerator();
         var data = qrGen.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
         var pngQr = new PngByteQRCode(data).GetGraphic(10);

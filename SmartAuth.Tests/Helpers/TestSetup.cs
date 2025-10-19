@@ -105,8 +105,7 @@ public static class TestSetup
             var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, emailClaim) };
             ctx.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));
         }
-        var accessor = new HttpContextAccessor { HttpContext = ctx };
+        var accessor = new FixedHttpContextAccessor { HttpContext = ctx };
         return (accessor, (ServiceProvider)sp, cfg);
     }
 }
-

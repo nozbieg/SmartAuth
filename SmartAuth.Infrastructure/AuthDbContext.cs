@@ -7,6 +7,7 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options, TimeProvider
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<UserAuthenticator> UserAuthenticators => Set<UserAuthenticator>();
+    public DbSet<UserBiometric> UserBiometrics => Set<UserBiometric>();
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

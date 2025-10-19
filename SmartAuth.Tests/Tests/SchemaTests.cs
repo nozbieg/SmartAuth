@@ -59,4 +59,18 @@ public sealed class SchemaTests(PostgresContainerFixture fx) : IClassFixture<Pos
         var uniqIdx = uaEt.GetIndexes().FirstOrDefault(i => i.IsUnique && i.Properties.SequenceEqual(new[] { userIdProp, typeProp }));
         Assert.NotNull(uniqIdx);
     }
+
+    [Fact]
+    public async Task Vector_index_on_user_biometrics_exists()
+    {
+        await using var db = DbContextFactory.Create(_cs);
+        await db.Database.MigrateAsync();
+        var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT indexname FROM pg_indexes WHERE schemaname='public' AND tablename='user_biometrics' AND indexname='ix_user_biometrics_embedding_ivfflat';";
+        var result = await cmd.ExecuteScalarAsync();
+        var indexName = result as string;
+        Assert.Equal("ix_user_biometrics_embedding_ivfflat", indexName);
+    }
 }
