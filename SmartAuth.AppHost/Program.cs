@@ -1,6 +1,9 @@
 using SmartAuth.AppHost;
+using SmartAuth.AppHost.Tools;
 
 var builder = DistributedApplication.CreateBuilder(args);
+
+ModelFetcher.TryFetchModelsIfNeeded(builder.Configuration);
 
 var pgPassword = builder.AddParameter(
     name: "postgres-password",

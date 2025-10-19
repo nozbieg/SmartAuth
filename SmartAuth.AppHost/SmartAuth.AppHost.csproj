@@ -21,4 +21,17 @@
         <ProjectReference Include="..\SmartAuth.Api\SmartAuth.Api.csproj"/>
     </ItemGroup>
 
+    <!-- Embed script from tools/ and link helper class -->
+    <ItemGroup>
+      <EmbeddedResource Include="..\tools\fetch-models.ps1">
+        <Link>tools\fetch-models.ps1</Link>
+        <LogicalName>fetch-models.ps1</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="..\tools\ModelFetcher.cs">
+        <Link>tools\ModelFetcher.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>

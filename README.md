@@ -10,7 +10,9 @@ Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL 
 5. Uruchamianie – szczegóły
 6. Baza danych i migracje
 7. Konfiguracja (appsettings / zmienne środowiskowe)
+7.1 Konfiguracja TOTP
 8. Feature Flags
+8.1 Rozszerzanie feature flags
 9. Uwierzytelnianie i przepływ logowania
 10. Endpointy API (kontrakty)
 11. Frontend (React / Vite)
@@ -22,6 +24,9 @@ Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL 
 17. Następne kroki (roadmap sugestii)
 18. Skrócone komendy (cheat‑sheet)
 19. Pokrycie testów (coverage)
+20. Modele biometryczne (Face / Liveness)
+20.5 Ręczne wywołanie pobierania modeli
+21. Filtry, rozszerzenia i wewnętrzne komponenty
 
 ---
 ## 1. Cel projektu
@@ -53,7 +58,7 @@ Struktura solution:
 ```
 
 ## 3. Stos technologiczny
-Backend: .NET 9, Minimal API, EF Core 9, Npgsql, pgvector EF, OpenTelemetry, Swashbuckle.
+Backend: .NET 9, Minimal API, EF Core 9, Npgsql, pgvector EF, OpenTelemetry, Swashbuckle, ONNX Runtime (inferencja modeli biometrycznych), QRCoder (generowanie kodów QR dla provisioning TOTP w przyszłości).
 Frontend: React 18, Vite, TypeScript, React Router, Vitest, Testing Library.
 Inne: Testcontainers, PBKDF2 (Rfc2898DeriveBytes) dla haseł, JWT (HMAC SHA256).
 
@@ -144,9 +149,43 @@ set Jwt__Key=NOWY_BARDZIEJ_TAJNY_KLUCZ
 set FeatureFlags__twofa_code=true
 ```
 
+### 7.1 Konfiguracja TOTP
+Sekcja `Totp` (opcjonalna, przyszłe wdrożenie pełnej weryfikacji) może wyglądać następująco:
+```json
+"Totp": {
+  "Issuer": "SmartAuthDev",
+  "Digits": 6,
+  "StepSeconds": 30,
+  "SkewSteps": 1,
+  "Algorithm": "SHA1"  // docelowo SHA256 można rozważyć
+}
+```
+Opis:
+- `Issuer` – wyświetlany w aplikacji uwierzytelniającej (Google/Microsoft Authenticator).
+- `Digits` – ilość cyfr kodu jednorazowego.
+- `StepSeconds` – długość okna czasowego.
+- `SkewSteps` – tolerancja odchylenia (przesunięcie czasowe w przód/tył).
+- `Algorithm` – domyślnie SHA1 (kompatybilność z większością aplikacji), można rozszerzyć.
+Override (CMD):
+```
+set Totp__StepSeconds=45
+set Totp__Digits=6
+```
+> Uwaga: Aktualna implementacja backendu zawiera tylko podstawową konfigurację `TotpOptions`; pełna walidacja TOTP i generacja sekretów jest w fazie planowania.
+
 ## 8. Feature Flags
 Endpoint: `GET /api/feature-flags` zwraca JSON `{ "twofa_code": true|false }`.
 Uwaga: Implementacja posiada klasę `FeatureFlagsConfig` która obecnie zwraca `true` niezależnie od appsettings.
+
+### 8.1 Rozszerzanie feature flags
+Aby dodać nową flagę (np. `twofa_totp`):
+1. Dodaj pole w konfiguracji (`appsettings.json`):
+```json
+"FeatureFlags": { "twofa_code": true, "twofa_totp": false }
+```
+2. Rozszerz klasę/rekord reprezentujący wynik (`Contracts/FeatureFlags.cs`).
+3. Użyj w SPA przez kontekst `FeatureFlagsContext` (pobranie i interpretacja). W komponencie można warunkować widoki: `flags.twofa_totp && <TotpConfig />`.
+4. (Opcjonalnie) Dodać test frontendowy weryfikujący zachowanie przy włączonej/wyłączonej fladze.
 
 ## 9. Uwierzytelnianie i przepływ logowania
 - Rejestracja: e‑mail + hasło -> zapis użytkownika (PBKDF2 hash + salt, normalizacja e‑maila do lower-case, status Active).
@@ -343,6 +382,88 @@ dotnet publish SmartAuth.Web -c Release -o publish/web
 ## 19. Pokrycie testów (coverage)
 Frontend: raport tekstowy i `lcov` (do integracji z narzędziami pokrycia / badge). Lokalizacja w katalogu projektu po uruchomieniu `npm test -- --coverage`.
 Backend: użyj parametrów Coverlet (`CollectCoverage=true`, `CoverletOutputFormat=opencover`). Możliwe rozszerzenie o raport HTML (narzędzia zewnętrzne np. ReportGenerator).
+
+---
+## 20. Modele biometryczne (Face / Liveness)
+Zarządzanie plikami modeli odbywa się przez sekcję `ModelFetching` w `SmartAuth.AppHost/appsettings.json` (i `.Development`). Cała logika sprawdzania brakujących plików jest w kodzie C# (`ModelFetcher`), a osadzony skrypt PowerShell (`tools/fetch-models.ps1`) służy wyłącznie do pobrania wskazanych brakujących modeli z postępem.
+
+### 20.1 Konfiguracja (appsettings)
+Przykład:
+```json
+"ModelFetching": {
+  "Skip": false,
+  "Verbose": true,
+  "Directory": "SmartAuth.Infrastructure/models",
+  "Models": {
+    "FaceDetector": {
+      "FileName": "retinaface.onnx",
+      "Url": "https://huggingface.co/vidyamdeveloper/retinaface-onnx/resolve/main/retinaface_standard_conversion.onnx?download=true"
+    },
+    "FaceEmbedder": {
+      "FileName": "arcface.onnx",
+      "Url": "https://huggingface.co/FoivosPar/Arc2Face/resolve/da2f1e9aa3954dad093213acfc9ae75a68da6ffd/arcface.onnx?download=true"
+    },
+    "PassiveLiveness": {
+      "FileName": "liveness_passive_v1.onnx",
+      "Url": null
+    }
+  }
+}
+```
+Opis pól:
+- `Skip` – globalne wyłączenie mechanizmu pobierania.
+- `Verbose` – włącza dodatkowe logi (domyślnie true).
+- `Directory` – docelowy katalog zapisu plików modeli (względny lub absolutny).
+- `Models` – słownik definicji modeli; `Url=null` oznacza brak źródła (model nie zostanie pobrany jeśli brakuje pliku).
+
+### 20.2 Przepływ pobierania
+1. `ModelFetcher` (AppHost startup) wczytuje konfigurację.
+2. Sprawdza dla każdego wpisu czy plik (`Directory/FileName`) istnieje.
+3. Tworzy listę brakujących modeli posiadających `Url`.
+4. Generuje JSON (`MODELS_SPEC`) i uruchamia osadzony skrypt PowerShell z env: `MODELS_TARGET_DIR`, `MODELS_SPEC`, `MODEL_FETCH_VERBOSE`.
+5. Skrypt wykonuje pobieranie strumieniowe z paskiem postępu i zapisuje manifest `checksums.json`.
+
+### 20.3 Skrypt PowerShell (osadzony)
+Parametry środowiskowe (ustawiane przez C#):
+- `MODELS_TARGET_DIR` – lokalizacja docelowa.
+- `MODELS_SPEC` – JSON lista brakujących modeli (każdy: `name`, `url`, `fileName`).
+- `MODEL_FETCH_VERBOSE` – steruje poziomem logów (`true` / `false`).
+- `NO_PROGRESS` – jeśli `true`, wyłącza pasek postępu.
+
+Skrypt nie wykonuje logiki biznesowej (nie sprawdza czy plik istnieje) – przyjmuje, że dostaje tylko brakujące modele.
+
+### 20.4 Dodawanie nowego modelu
+Wystarczy dodać wpis w `ModelFetching.Models`:
+```json
+"MyNewModel": { "FileName": "my_new_model.onnx", "Url": "https://example.com/my_new_model.onnx" }
+```
+Po restarcie AppHost brakujący plik zostanie pobrany automatycznie.
+
+### 20.5 Ręczne wywołanie pobierania modeli
+Standardowo mechanizm uruchamia się przy starcie `AppHost`. Jeśli potrzebujesz wymusić ponowne pobranie (np. wyczyściłeś katalog):
+1. Usuń pliki modeli z katalogu wskazanego w `ModelFetching:Directory`.
+2. Ustaw (opcjonalnie) zmienne środowiskowe dla trybu bez paska postępu:
+```
+set NO_PROGRESS=true
+```
+3. Uruchom ponownie:
+```
+dotnet run --project SmartAuth.AppHost
+```
+> Jeżeli potrzebne jest całkowite pominięcie procesu (np. offline): `set ModelFetching__Skip=true` lub w `appsettings.Development.json` ustaw `"Skip": true`.
+
+## 21. Filtry, rozszerzenia i wewnętrzne komponenty
+Krótki opis istotnych elementów kodu:
+- `MediatorEndpointFilter` – filtr endpointów integrujący prosty mediator/wzorzec obsługi komend (walidacja + wykonanie). Ułatwia jednolite mapowanie i obsługę błędów.
+- Metody rozszerzeń w `Extensions/AuthenticationInstall.cs`, `HandlersInstall.cs`, `ValidatorsInstall.cs` – kapsułkują rejestrację DI (czytelniejsze `Program.cs`).
+- `MigrationRunnerHostedService` – uruchamia automatyczne migracje przy starcie API, redukując manualne kroki.
+- `CommandResultHttpMapping` – mapuje rezultaty logiki (sukces / błędy domenowe) na odpowiedzi HTTP (status + payload).
+- `AuthCrypto` – odpowiedzialny za hashowanie haseł (PBKDF2). Przyszłe rozszerzenia: Argon2 / scrypt.
+- `TokenUtilities` – generowanie JWT (final oraz tymczasowy) + claims.
+- `CosineSimilarity` – pomocnicze obliczanie podobieństwa wektorów (planowane użycie w biometriach / embeddings).
+- `MicrosoftAuthenticatorClient` – (zalążek) generowania materiałów provisioning dla aplikacji TOTP (docelowo QR kod + otpauth URI).
+
+> Dodając nowe komponenty, zachowuj konwencję: publikuj prostą metodę rozszerzeń do rejestracji w DI, aby utrzymać `Program.cs` zwięzły.
 
 ---
 Happy coding! Jeśli czegoś brakuje – rozbuduj README wraz z ewolucją projektu.

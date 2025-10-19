@@ -7,6 +7,9 @@ using SmartAuth.Api.Startup;
 using SmartAuth.ServiceDefaults;
 using SmartAuth.Api.Utilities;
 using SmartAuth.Api.Services;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 

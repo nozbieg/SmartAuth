@@ -15,7 +15,7 @@ public class TwoFaTotpStatusQueryHandler(AuthDbContext db, IHttpContextAccessor 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Unauthorized());
 
-        var active = await db.UserAuthenticators.AnyAsync(a => a.IsActive && a.Type == AuthenticatorType.Totp && a.User.Email == email, ct);
+        var active = await db.UserAuthenticators.AnyAsync(a => a.IsActive && a.Type == AuthenticatorType.Totp && a.User != null && a.User.Email == email, ct);
         return CommandResult<TwoFaTotpStatusResult>.Ok(new TwoFaTotpStatusResult(active));
     }
 }

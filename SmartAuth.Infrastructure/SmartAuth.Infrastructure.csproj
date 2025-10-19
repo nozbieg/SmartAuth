@@ -23,8 +23,4 @@
       <ProjectReference Include="..\SmartAuth.Domain\SmartAuth.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="models\" />
-    </ItemGroup>
-
 </Project>
