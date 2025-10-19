@@ -9,6 +9,7 @@ using SmartAuth.Domain.Entities;
 using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Commons;
 using SmartAuth.Infrastructure.Security;
+using SmartAuth.Infrastructure.Biometrics; // dodane
 
 namespace SmartAuth.Tests.Helpers;
 
@@ -70,7 +71,9 @@ public static class TestSetup
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(TimeProvider.System);
-        services.AddSingleton(BuildConfig(twoFaCodeEnabled, overrides));
+        var config = BuildConfig(twoFaCodeEnabled, overrides);
+        services.AddSingleton(config);
+        services.AddBiometrics(config); // rejestracja biometriki
         services.AddDbContext<AuthDbContext>(o =>
         {
             o.UseNpgsql(cs, npg => npg.UseVector());
@@ -92,6 +95,7 @@ public static class TestSetup
         services.AddSingleton(TimeProvider.System);
         var cfg = BuildConfig(twoFaCodeEnabled, overrides);
         services.AddSingleton<IConfiguration>(cfg);
+        services.AddBiometrics(cfg); // rejestracja biometriki
         services.AddDbContext<AuthDbContext>(o =>
         {
             o.UseNpgsql(cs, npg => npg.UseVector());

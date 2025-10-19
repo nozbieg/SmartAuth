@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartAuth.Infrastructure.Commons;
+using SmartAuth.Infrastructure.Biometrics;
 
 namespace SmartAuth.Infrastructure;
 
@@ -10,7 +11,8 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddScoped<IMediator, Mediator>();
-        
+        // Rejestracja biometriki
+        services.AddBiometrics(configuration);
         AddDbContext(services, configuration);
         return services;
     }
