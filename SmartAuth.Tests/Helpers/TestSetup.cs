@@ -24,11 +24,12 @@ public static class TestSetup
         ["Jwt:TempTokenMinutes"] = "5"
     };
 
-    public static IConfiguration BuildConfig(bool twoFaCodeEnabled = false, IDictionary<string,string?>? overrides = null)
+    public static IConfiguration BuildConfig(bool twoFaCodeEnabled = false, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
     {
         var dict = new Dictionary<string,string?>(BaseJwtSettings)
         {
-            ["FeatureFlags:twofa_code"] = twoFaCodeEnabled ? "true" : "false"
+            ["FeatureFlags:twofa_code"] = twoFaCodeEnabled ? "true" : "false",
+            ["FeatureFlags:twofa_face"] = twoFaFaceEnabled ? "true" : "false"
         };
         if (overrides is not null)
             foreach (var kv in overrides) dict[kv.Key] = kv.Value;
@@ -66,12 +67,12 @@ public static class TestSetup
         return user;
     }
 
-    public static (ServiceProvider provider, IMediator mediator) BuildMediator(string cs, bool twoFaCodeEnabled = false, IDictionary<string,string?>? overrides = null)
+    public static (ServiceProvider provider, IMediator mediator) BuildMediator(string cs, bool twoFaCodeEnabled = false, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
     {
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(TimeProvider.System);
-        var config = BuildConfig(twoFaCodeEnabled, overrides);
+        var config = BuildConfig(twoFaCodeEnabled, twoFaFaceEnabled, overrides);
         services.AddSingleton(config);
         services.AddBiometrics(config); // rejestracja biometriki
         services.AddDbContext<AuthDbContext>(o =>
@@ -88,12 +89,12 @@ public static class TestSetup
         return ((ServiceProvider)sp, mediator);
     }
 
-    public static (IHttpContextAccessor accessor, ServiceProvider provider, IConfiguration cfg) BuildHttpContextWithUser(string cs, string? emailClaim, bool twoFaCodeEnabled = true, IDictionary<string,string?>? overrides = null)
+    public static (IHttpContextAccessor accessor, ServiceProvider provider, IConfiguration cfg) BuildHttpContextWithUser(string cs, string? emailClaim, bool twoFaCodeEnabled = true, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
     {
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(TimeProvider.System);
-        var cfg = BuildConfig(twoFaCodeEnabled, overrides);
+        var cfg = BuildConfig(twoFaCodeEnabled, twoFaFaceEnabled, overrides);
         services.AddSingleton<IConfiguration>(cfg);
         services.AddBiometrics(cfg); // rejestracja biometriki
         services.AddDbContext<AuthDbContext>(o =>

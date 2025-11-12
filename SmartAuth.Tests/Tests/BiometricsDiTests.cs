@@ -21,6 +21,8 @@ public sealed class BiometricsDiTests(PostgresContainerFixture fx) : IClassFixtu
         var quality = provider.GetRequiredService<IQualityAssessor>();
         var matcher = provider.GetRequiredService<IFaceMatcher>();
         var policy = provider.GetRequiredService<IBiometricPolicy>();
+        var recognition = provider.GetRequiredService<IFaceRecognitionService>();
         Assert.True(policy.MinQualityOverall <= 0.5);
+        Assert.NotNull(recognition);
     }
 }

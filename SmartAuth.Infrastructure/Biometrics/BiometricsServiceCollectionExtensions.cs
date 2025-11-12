@@ -18,6 +18,7 @@ public static class BiometricsServiceCollectionExtensions
         services.AddSingleton<IQualityAssessor, QualityAssessorDefault>();
         services.AddSingleton<IFaceMatcher, FaceMatcher>();
         services.AddSingleton<IBiometricPolicy, BiometricPolicyDefault>();
+        services.AddSingleton<IFaceRecognitionService, FaceRecognitionService>();
         return services;
     }
 }
