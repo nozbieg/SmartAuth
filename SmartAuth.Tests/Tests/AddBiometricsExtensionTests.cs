@@ -24,9 +24,11 @@ public sealed class AddBiometricsExtensionTests
         var detector = sp.GetService<IFaceDetector>();
         var embedder = sp.GetService<IFaceEmbedder>();
         var matcher = sp.GetService<IFaceMatcher>();
+        var recognition = sp.GetService<IFaceRecognitionService>();
         Assert.NotNull(detector);
         Assert.NotNull(embedder);
         Assert.NotNull(matcher);
+        Assert.NotNull(recognition);
     }
 }
 

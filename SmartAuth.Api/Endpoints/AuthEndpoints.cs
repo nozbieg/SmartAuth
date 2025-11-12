@@ -18,6 +18,10 @@ public static class AuthEndpoints
         auth.MapPost("/2fa/totp/enable", (TwoFaTotpEnableCommand req) => req).RequireAuthorization();
         auth.MapPost("/2fa/totp/disable", (TwoFaTotpDisableCommand req) => req).RequireAuthorization();
         auth.MapGet("/2fa/totp/status", () => new TwoFaTotpStatusQuery()).RequireAuthorization();
+        auth.MapPost("/2fa/face/enroll", (TwoFaFaceEnrollCommand req) => req).RequireAuthorization();
+        auth.MapPost("/2fa/face/verify", (TwoFaFaceVerifyCommand req) => req).RequireAuthorization();
+        auth.MapDelete("/2fa/face", () => new TwoFaFaceDisableCommand()).RequireAuthorization();
+        auth.MapGet("/2fa/face/status", () => new TwoFaFaceStatusQuery()).RequireAuthorization();
 
         return app;
     }

@@ -8,7 +8,14 @@ public static class FeatureFlagEndpoints
     {
         // Feature Flags (could be served from Commons here)
         app.MapGet("/api/feature-flags",
-            (IConfiguration cfg) => Results.Json(new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled)));
+            (IConfiguration cfg) =>
+            {
+                var section = cfg.GetSection("FeatureFlags");
+                var flags = section.Exists()
+                    ? section.Get<FeatureFlags>()
+                    : new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled);
+                return Results.Json(flags);
+            });
         return app;
     }
 }
