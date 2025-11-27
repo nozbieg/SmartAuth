@@ -7,9 +7,7 @@ using SmartAuth.Api.Startup;
 using SmartAuth.ServiceDefaults;
 using SmartAuth.Api.Utilities;
 using SmartAuth.Api.Services;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Reflection;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +19,6 @@ builder.AddServiceDefaults();
 builder.Services.AddSingleton<MediatorEndpointFilter>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddSmartAuthDbContext(builder.Configuration);
 
@@ -36,14 +33,19 @@ builder.Services.AddHealthChecks()
 builder.Services.AddHostedService<MigrationRunnerHostedService>();
 builder.Services.Configure<TotpOptions>(builder.Configuration.GetSection("Totp"));
 builder.Services.AddSingleton<IMicrosoftAuthenticatorClient, MicrosoftAuthenticatorClient>();
+builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
+{
+    options.Title = "SmartAuth API";
+});
 
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseAuthEndpoints();
 app.UseFeatureFlagEndpoints();
 

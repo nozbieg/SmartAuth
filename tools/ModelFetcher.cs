@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
 
-namespace SmartAuth.AppHost.Tools;
+namespace SmartAuth.AppHost;
 
 public static class ModelFetcher
 {

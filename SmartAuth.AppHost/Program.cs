@@ -1,5 +1,4 @@
 using SmartAuth.AppHost;
-using SmartAuth.AppHost.Tools;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
