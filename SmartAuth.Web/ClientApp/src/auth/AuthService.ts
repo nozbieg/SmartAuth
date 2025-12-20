@@ -5,7 +5,7 @@ type Claims = { exp?: number; [k: string]: unknown };
 export type LoginResponse = {
     requires2Fa: boolean;
     token: string;
-    methods?: Array<"code" | "totp">;
+    methods?: Array<"code" | "totp" | "face" | "voice">;
 };
 
 export type Verify2FAResponse = { jwt: string };
@@ -131,6 +131,10 @@ export async function loginWithPassword(email: string, password: string): Promis
 
 export async function verifyCode(tempToken: string, code: string): Promise<Verify2FAResponse> {
     return apiPost<Verify2FAResponse>("/api/auth/2fa/code/verify", {code}, {Authorization: `Bearer ${tempToken}`});
+}
+
+export async function verifyFace(tempToken: string, imageBase64: string): Promise<Verify2FAResponse> {
+    return apiPost<Verify2FAResponse>("/api/auth/2fa/face/verify", { imageBase64 }, { Authorization: `Bearer ${tempToken}` });
 }
 
 export function saveJwt(jwt: string) {

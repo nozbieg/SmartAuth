@@ -5,9 +5,17 @@ import {useNavigate, Link} from "react-router-dom";
 import AuthLayout from "../../components/layout/AuthLayout";
 import Button from "../../components/ui/Button";
 import TotpVerifyForm from '../../components/twofa/TotpVerifyForm';
+import FaceVerifyForm from "../../components/twofa/FaceVerifyForm";
 
 type Step = "credentials" | "twofa";
-type TwoFAMethod = "totp" | "face" | "voice";
+type TwoFAMethod = "totp" | "code" | "face" | "voice";
+
+const methodLabels: Record<TwoFAMethod, string> = {
+    totp: "TOTP",
+    code: "Kod SMS",
+    face: "Biometria",
+    voice: "Głos"
+};
 
 const LoginPage: React.FC = () => {
     const nav = useNavigate();
@@ -24,6 +32,7 @@ const LoginPage: React.FC = () => {
     const [err, setErr] = useState<string | null>(null);
     const [info, setInfo] = useState<string | null>(null);
     const [busy, setBusy] = useState(false);
+    const [verificationBusy, setVerificationBusy] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<Record<string,string>>({});
 
     async function onSubmitCredentials(e: React.FormEvent) {
@@ -36,7 +45,14 @@ const LoginPage: React.FC = () => {
         try {
             const res = await loginWithPassword(email.trim(), password); // LoginResponse
             if (res.requires2Fa) {
-                const methods = (res.methods ?? []).filter(m => (m === "code" && !!flags?.twofa_code) || m === "totp") as TwoFAMethod[];
+                const methods = (res.methods ?? []).reduce<TwoFAMethod[]>((acc, method) => {
+                    if (method === "code") {
+                        if (flags?.twofa_code) acc.push("code");
+                        return acc;
+                    }
+                    if (method === "totp" || method === "face" || method === "voice") acc.push(method);
+                    return acc;
+                }, []);
                 if (methods.length === 0) {
                     setErr("Brak dostępnych metod 2FA.");
                     return;
@@ -77,6 +93,7 @@ const LoginPage: React.FC = () => {
         setInfo(null);
         setErr(null);
         setFieldErrors({});
+        setVerificationBusy(false);
     }
 
     function renderCredentialsForm() {
@@ -126,9 +143,9 @@ const LoginPage: React.FC = () => {
                         aria-pressed={selectedMethod === m}
                         className="method-btn"
                         onClick={() => setSelected(m)}
-                        disabled={busy}
+                        disabled={busy || verificationBusy}
                     >
-                        <small>Metoda</small>{m.toUpperCase()}
+                        <small>Metoda</small>{methodLabels[m] ?? m.toUpperCase()}
                     </button>
                 ))}
             </div>
@@ -145,9 +162,27 @@ const LoginPage: React.FC = () => {
                 {err && <div className="alert alert-danger" role="alert">{err}</div>}
                 {info && !err && <div className="alert alert-info" role="status">{info}</div>}
                 {renderMethodSelector()}
-                
-                {selectedMethod === "totp" && tempToken && (
-                    <TotpVerifyForm tempToken={tempToken} onSuccess={(jwt) => { saveJwt(jwt); nav('/home',{replace:true}); }} onCancel={resetToCredentials} />
+
+                {(selectedMethod === "totp" || selectedMethod === "code") && tempToken && (
+                    <TotpVerifyForm
+                        tempToken={tempToken}
+                        busy={verificationBusy}
+                        onBusyChange={setVerificationBusy}
+                        onSuccess={(jwt) => { saveJwt(jwt); nav('/home',{replace:true}); }}
+                        onCancel={resetToCredentials}
+                    />
+                )}
+                {selectedMethod === "face" && tempToken && (
+                    <FaceVerifyForm
+                        tempToken={tempToken}
+                        onBusyChange={setVerificationBusy}
+                        disabled={verificationBusy}
+                        onSuccess={(jwt) => { saveJwt(jwt); nav('/home',{replace:true}); }}
+                        onCancel={resetToCredentials}
+                    />
+                )}
+                {selectedMethod === "voice" && (
+                    <div className="alert alert-info" role="status">Metoda głosowa nie jest jeszcze dostępna w tej wersji.</div>
                 )}
             </div>
         );
