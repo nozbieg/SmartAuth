@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../../components/layout/AppLayout";
 import Card from "../../components/ui/Card";
 import TotpConfig from "../../components/twofa/TotpConfig";
+import BiometricComponent from "../../components/twofa/BiometricComponent";
 
 interface Claims {
     sub: string;
@@ -45,6 +46,7 @@ const LandingPage: React.FC = () => {
                     </ul>
                 </Card>
                 <TotpConfig />
+                <BiometricComponent />
             </div>
         </AppLayout>
     );

@@ -11,6 +11,8 @@ export type LoginResponse = {
 export type Verify2FAResponse = { jwt: string };
 export type TotpSetupResponse = { setupId: string; secret: string; otpAuthUri: string; qrImageBase64: string };
 export type TotpStatusResponse = { active: boolean };
+export type FaceStatusResponse = { enabled: boolean; activeCount: number };
+export type FaceEnrollResponse = { biometricId: string; qualityScore: number; livenessScore: number; modelVersion: string };
 
 export class ApiError extends Error {
     code?: string;
@@ -64,6 +66,33 @@ async function apiPost<T>(url: string, body: any, headers?: Record<string, strin
         }
         const traceId = json?.traceId || json?.TraceId;
         throw new ApiError(message, {code, status, metadata, traceId});
+    }
+    return json as T;
+}
+
+async function apiDelete<T>(url: string, headers?: Record<string, string>): Promise<T> {
+    let res: Response;
+    try {
+        res = await fetch(url, { method: 'DELETE', headers: { ...(headers || {}) } });
+    } catch (e: any) {
+        throw new ApiError(e?.message || 'Brak połączenia z serwerem');
+    }
+    let json: any = null;
+    try {
+        json = await res.json();
+    } catch { /* brak body */ }
+    if (!res.ok) {
+        const message = json?.message || json?.Message || `Żądanie nie powiodło się (${res.status})`;
+        const code = json?.code || json?.Code;
+        const status = json?.status || json?.Status || res.status;
+        const rawMeta = json?.metadata || json?.Metadata;
+        let metadata: Record<string, string> | undefined;
+        if (rawMeta && typeof rawMeta === 'object') {
+            metadata = {};
+            for (const [k, v] of Object.entries(rawMeta)) metadata[k] = typeof v === 'string' ? v : JSON.stringify(v);
+        }
+        const traceId = json?.traceId || json?.TraceId;
+        throw new ApiError(message, { code, status, metadata, traceId });
     }
     return json as T;
 }
@@ -144,4 +173,16 @@ export async function totpEnable(jwt: string, setupId: string, code: string): Pr
 
 export async function totpDisable(jwt: string): Promise<{ message: string }> {
     return apiPost<{ message: string }>("/api/auth/2fa/totp/disable", {}, {Authorization: `Bearer ${jwt}`});
+}
+
+export async function faceStatus(jwt: string): Promise<FaceStatusResponse> {
+    return apiGet<FaceStatusResponse>("/api/auth/2fa/face/status", { Authorization: `Bearer ${jwt}` });
+}
+
+export async function faceEnroll(jwt: string, imageBase64: string): Promise<FaceEnrollResponse> {
+    return apiPost<FaceEnrollResponse>("/api/auth/2fa/face/enroll", { imageBase64 }, { Authorization: `Bearer ${jwt}` });
+}
+
+export async function faceDisable(jwt: string): Promise<{ message?: string }> {
+    return apiDelete<{ message?: string }>("/api/auth/2fa/face", { Authorization: `Bearer ${jwt}` });
 }

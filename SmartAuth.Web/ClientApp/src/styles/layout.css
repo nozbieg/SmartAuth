@@ -105,3 +105,10 @@ footer.page-footer { margin-top:auto; padding:1rem 1.25rem; font-size:.7rem; tex
 .qr-wrapper img { display:block; width:100%; height:auto; }
 .code-secret { font-family: monospace; word-break: break-all; font-size:.85rem; }
 .code-uri { font-family: monospace; word-break: break-all; font-size:.75rem; }
+.camera-section { gap:1rem; }
+.camera-preview { border:1px dashed var(--color-border); border-radius: var(--radius-md); overflow:hidden; background:#0f172a; display:flex; align-items:center; justify-content:center; min-height:220px; }
+.camera-preview video { width:100%; max-width:420px; height:auto; display:block; }
+.modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.55); display:flex; align-items:center; justify-content:center; z-index:100; padding:1rem; }
+.modal { background:#fff; color: var(--color-text); border-radius: var(--radius-lg); padding:1.25rem 1.5rem; max-width:480px; width:100%; box-shadow: var(--shadow-md); display:flex; flex-direction:column; gap:.75rem; }
+.modal h3 { margin:0; font-size:1.1rem; }
+.modal-actions { display:flex; gap:.75rem; flex-wrap:wrap; justify-content:flex-end; }
