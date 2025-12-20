@@ -31,4 +31,8 @@
     <Folder Include="Middlewares\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="models\**\*" CopyToOutputDirectory="PreserveNewest" LinkBase="models" />
+  </ItemGroup>
+
 </Project>

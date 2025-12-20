@@ -30,6 +30,7 @@ public sealed class TwoFaFaceEnrollCommandHandler(
 {
     public async Task<CommandResult<TwoFaFaceEnrollResult>> Handle(TwoFaFaceEnrollCommand req, CancellationToken ct)
     {
+
         var ctx = accessor.HttpContext;
         if (ctx is null)
             return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Internal("Missing HttpContext"));
@@ -57,6 +58,7 @@ public sealed class TwoFaFaceEnrollCommandHandler(
         {
             return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Validation(ex.Message));
         }
+
 
         FaceEnrollmentResult enrollment;
         try

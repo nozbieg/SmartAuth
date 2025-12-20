@@ -3,7 +3,7 @@
 public sealed class BiometricsOptions
 {
     // Ścieżki modeli ONNX (konfiguracja w appsettings lub secret store)
-    public string FaceDetectorModelPath { get; set; } = "models/retinaface.onnx";
+    public string FaceDetectorModelPath { get; set; } = "models/ultraface.onnx";
     public string FaceEmbedderModelPath { get; set; } = "models/arcface.onnx";
     public string PassiveLivenessModelPath { get; set; } = "models/liveness_passive_v1.onnx";
 

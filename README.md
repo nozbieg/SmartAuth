@@ -396,8 +396,8 @@ Przykład:
   "Directory": "SmartAuth.Infrastructure/models",
   "Models": {
     "FaceDetector": {
-      "FileName": "retinaface.onnx",
-      "Url": "https://huggingface.co/vidyamdeveloper/retinaface-onnx/resolve/main/retinaface_standard_conversion.onnx?download=true"
+      "FileName": "ultraface.onnx",
+      "Url": "https://github.com/onnx/models/raw/main/validated/vision/body_analysis/ultraface/models/version-RFB-640.onnx"
     },
     "FaceEmbedder": {
       "FileName": "arcface.onnx",
@@ -416,14 +416,121 @@ Opis pól:
 - `Directory` – docelowy katalog zapisu plików modeli (względny lub absolutny).
 - `Models` – słownik definicji modeli; `Url=null` oznacza brak źródła (model nie zostanie pobrany jeśli brakuje pliku).
 
-### 20.2 Przepływ pobierania
+### 20.2 Model UltraFace (Face Detector)
+
+Aktualnie używamy **UltraFace** (version-RFB-640) z [ONNX Model Zoo](https://github.com/onnx/models/tree/main/validated/vision/body_analysis/ultraface) jako głównego detektora twarzy.
+
+#### Specyfikacja modelu:
+| Parametr | Wartość |
+|----------|---------|
+| Nazwa pliku | `ultraface.onnx` |
+| Źródło | ONNX Model Zoo (GitHub) |
+| Rozmiar | ~1.2 MB |
+| Wejście | `[1, 3, 480, 640]` - NCHW, RGB |
+| Normalizacja | `(pixel - 127) / 128` → zakres [-1, 1] |
+| Wyjścia | `scores[1, 17640, 2]`, `boxes[1, 17640, 4]` |
+
+#### Dlaczego UltraFace?
+- ✅ **Lekki i szybki** - tylko ~1.2 MB, szybka inferencja
+- ✅ **Sprawdzony** - oficjalny model z ONNX Model Zoo
+- ✅ **Prosty format wyjściowy** - boxes są już znormalizowane do [0,1]
+- ✅ **Dobra dokładność** - wykrywa twarze z wysoką pewnością
+
+#### Poprzedni model (RetinaFace)
+Wcześniej używany model `retinaface_standard_conversion.onnx` z HuggingFace miał problemy z konwersją - zwracał nieprawidłowe wartości score (prawie identyczne dla obu klas: background i face), co uniemożliwiało poprawną detekcję.
+
+### 20.3 Implementacja OnnxFaceDetector
+
+Klasa `OnnxFaceDetector` (`SmartAuth.Infrastructure/Biometrics/OnnxFaceDetector.cs`) realizuje detekcję twarzy przy użyciu ONNX Runtime.
+
+#### Architektura:
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    OnnxFaceDetector                         │
+├─────────────────────────────────────────────────────────────┤
+│  DetectAsync(rgbImage, width, height)                       │
+│      │                                                      │
+│      ▼                                                      │
+│  PrepareInputTensor()                                       │
+│      - Resize do 640x480 (bilinear interpolation)           │
+│      - Normalizacja: (pixel - 127) / 128                    │
+│      - Format: NCHW [1, 3, 480, 640]                        │
+│      │                                                      │
+│      ▼                                                      │
+│  ONNX Runtime Inference                                     │
+│      │                                                      │
+│      ▼                                                      │
+│  ParseOutputs()                                             │
+│      - Filtrowanie po ConfidenceThreshold (0.7)             │
+│      - Dekodowanie boxes [x1, y1, x2, y2] → [x, y, w, h]    │
+│      - Skalowanie do oryginalnych wymiarów                  │
+│      │                                                      │
+│      ▼                                                      │
+│  ApplyNms()                                                 │
+│      - Non-Maximum Suppression (threshold 0.3)              │
+│      - Sortowanie po score, usuwanie nakładających się      │
+│      │                                                      │
+│      ▼                                                      │
+│  FaceDetectionResult                                        │
+│      - Lista FaceCandidate (max 10)                         │
+│      - Sortowanie po Area (największe pierwsze)             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Kluczowe parametry:
+```csharp
+private const int ModelWidth = 640;
+private const int ModelHeight = 480;
+private const float ConfidenceThreshold = 0.7f;  // Min pewność detekcji
+private const float NmsThreshold = 0.3f;         // Próg IoU dla NMS
+private const int MaxFaces = 10;                 // Max zwracanych twarzy
+private const int MinFaceSize = 20;              // Min rozmiar twarzy (px)
+```
+
+#### Preprocessing obrazu:
+1. **Bilinear interpolation** - resize do 640x480 z zachowaniem jakości
+2. **Normalizacja** - `(pixel - 127) / 128` → zakres [-1, 1]
+3. **Format NCHW** - [batch, channels, height, width]
+
+#### Postprocessing:
+1. **Filtrowanie** - tylko detekcje z score > 0.7
+2. **Dekodowanie boxes** - z formatu [x1, y1, x2, y2] (znormalizowane 0-1) do [x, y, width, height] (piksele)
+3. **Skalowanie** - przeskalowanie do oryginalnych wymiarów obrazu
+4. **NMS** - usunięcie nakładających się detekcji (IoU > 0.3)
+5. **Sortowanie** - największe twarze pierwsze
+6. **Estymacja landmarków** - przybliżone pozycje: oczy, nos, usta
+
+#### Przykład użycia:
+```csharp
+var detector = new OnnxFaceDetector(biometricsOptions);
+var result = await detector.DetectAsync(rgbBytes, 640, 480, cancellationToken);
+
+foreach (var face in result.Faces)
+{
+    Console.WriteLine($"Face at ({face.Box.X}, {face.Box.Y}) " +
+                      $"size {face.Box.Width}x{face.Box.Height}, " +
+                      $"confidence: {face.Confidence:P0}");
+}
+```
+
+#### Typowe wyniki:
+```
+Input: 640x480 RGB image
+Output: 
+  - 17640 detekcji (wszystkie anchory)
+  - ~5-10 kandydatów po filtrze confidence
+  - 1-3 twarze po NMS
+  - Face: box=(274,133,125x162), score=1.000
+```
+
+### 20.4 Przepływ pobierania modeli
 1. `ModelFetcher` (AppHost startup) wczytuje konfigurację.
 2. Sprawdza dla każdego wpisu czy plik (`Directory/FileName`) istnieje.
 3. Tworzy listę brakujących modeli posiadających `Url`.
 4. Generuje JSON (`MODELS_SPEC`) i uruchamia osadzony skrypt PowerShell z env: `MODELS_TARGET_DIR`, `MODELS_SPEC`, `MODEL_FETCH_VERBOSE`.
 5. Skrypt wykonuje pobieranie strumieniowe z paskiem postępu i zapisuje manifest `checksums.json`.
 
-### 20.3 Skrypt PowerShell (osadzony)
+### 20.5 Skrypt PowerShell (osadzony)
 Parametry środowiskowe (ustawiane przez C#):
 - `MODELS_TARGET_DIR` – lokalizacja docelowa.
 - `MODELS_SPEC` – JSON lista brakujących modeli (każdy: `name`, `url`, `fileName`).
@@ -432,14 +539,14 @@ Parametry środowiskowe (ustawiane przez C#):
 
 Skrypt nie wykonuje logiki biznesowej (nie sprawdza czy plik istnieje) – przyjmuje, że dostaje tylko brakujące modele.
 
-### 20.4 Dodawanie nowego modelu
+### 20.6 Dodawanie nowego modelu
 Wystarczy dodać wpis w `ModelFetching.Models`:
 ```json
 "MyNewModel": { "FileName": "my_new_model.onnx", "Url": "https://example.com/my_new_model.onnx" }
 ```
 Po restarcie AppHost brakujący plik zostanie pobrany automatycznie.
 
-### 20.5 Ręczne wywołanie pobierania modeli
+### 20.7 Ręczne wywołanie pobierania modeli
 Standardowo mechanizm uruchamia się przy starcie `AppHost`. Jeśli potrzebujesz wymusić ponowne pobranie (np. wyczyściłeś katalog):
 1. Usuń pliki modeli z katalogu wskazanego w `ModelFetching:Directory`.
 2. Ustaw (opcjonalnie) zmienne środowiskowe dla trybu bez paska postępu:
