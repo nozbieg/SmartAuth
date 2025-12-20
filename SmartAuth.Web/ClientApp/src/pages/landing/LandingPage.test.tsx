@@ -19,6 +19,7 @@ vi.mock('jwt-decode', () => ({ jwtDecode: (t: string) => jwtDecodeMock(t) }));
 vi.mock('../../components/layout/AppLayout', () => ({ default: ({ children, title }: any) => <div><h1>{title}</h1>{children}</div> }));
 vi.mock('../../components/ui/Card', () => ({ default: (p: any) => <div>{p.children}</div> }));
 vi.mock('../../components/twofa/TotpConfig', () => ({ default: () => <div data-testid="totp" /> }));
+vi.mock('../../components/twofa/BiometricComponent', () => ({ default: () => <div data-testid="biometric" /> }));
 
 function makeToken(payload: Claims) {
   const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
@@ -38,6 +39,7 @@ describe('LandingPage', () => {
     expect(screen.getByText('jan@example.com')).toBeInTheDocument();
     expect(screen.getByText(/admin, user/)).toBeInTheDocument();
     expect(screen.getByTestId('totp')).toBeInTheDocument();
+    expect(screen.getByTestId('biometric')).toBeInTheDocument();
   });
   it('wylogowuje przy uszkodzonym tokenie', () => {
     localStorage.setItem('access_token', 'bad');
