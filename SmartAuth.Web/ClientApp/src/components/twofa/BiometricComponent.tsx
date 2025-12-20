@@ -3,12 +3,12 @@ import Card from "../ui/Card";
 import Button from "../ui/Button";
 import { ApiError, faceDisable, faceEnroll, faceStatus, getJwt, type FaceEnrollResponse, type FaceStatusResponse } from "../../auth/AuthService";
 import { encodeRgbPayload, ensureCanvas } from "../../commons/facePayload";
+import CameraFrame, { type ZoomRange } from "./CameraFrame";
 
 const BiometricComponent: React.FC = () => {
   const jwt = getJwt();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<FaceStatusResponse | null>(null);
   const [busy, setBusy] = useState(false);
@@ -17,6 +17,8 @@ const BiometricComponent: React.FC = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [showPermission, setShowPermission] = useState(false);
   const [analysis, setAnalysis] = useState<FaceEnrollResponse | null>(null);
+  const [zoomRange, setZoomRange] = useState<ZoomRange | null>(null);
+  const [zoom, setZoom] = useState<number | null>(null);
 
   useEffect(() => {
     if (!jwt) return;
@@ -43,6 +45,34 @@ const BiometricComponent: React.FC = () => {
     return () => {
       if (video) video.srcObject = null;
     };
+  }, [stream]);
+
+  useEffect(() => {
+    if (!stream) {
+      setZoomRange(null);
+      setZoom(null);
+      return;
+    }
+
+    const track = stream.getVideoTracks()[0];
+    if (!track?.getCapabilities) {
+      setZoomRange(null);
+      setZoom(null);
+      return;
+    }
+
+    const capabilities = track.getCapabilities();
+    const zoomCap = (capabilities as MediaTrackCapabilities & { zoom?: MediaSettingsRange }).zoom;
+    if (zoomCap && typeof zoomCap.min === "number" && typeof zoomCap.max === "number") {
+      const step = zoomCap.step && zoomCap.step > 0 ? zoomCap.step : 0.1;
+      const initialZoom = track.getSettings().zoom ?? zoomCap.min;
+      setZoomRange({ min: zoomCap.min, max: zoomCap.max, step });
+      setZoom(initialZoom);
+      applyZoom(track, initialZoom);
+    } else {
+      setZoomRange(null);
+      setZoom(null);
+    }
   }, [stream]);
 
   useEffect(() => () => stopStream(), []);
@@ -84,6 +114,20 @@ const BiometricComponent: React.FC = () => {
   function stopStream() {
     stream?.getTracks().forEach(t => t.stop());
     setStream(null);
+    setZoomRange(null);
+    setZoom(null);
+  }
+
+  function applyZoom(track: MediaStreamTrack, value: number) {
+    track.applyConstraints({ advanced: [{ zoom: value }] }).catch(() => {
+      setErr(prev => prev ?? "Nie udało się dostosować przybliżenia kamery.");
+    });
+  }
+
+  function handleZoomChange(value: number) {
+    setZoom(value);
+    const track = stream?.getVideoTracks()[0];
+    if (track) applyZoom(track, value);
   }
 
   async function captureAndEnroll() {
@@ -163,9 +207,12 @@ const BiometricComponent: React.FC = () => {
       </div>
       {stream && (
         <div className="card-section camera-section">
-          <div className="camera-preview" aria-label="Podgląd z kamery">
-            <video ref={videoRef} autoPlay muted playsInline width={320} height={240} />
-          </div>
+          <CameraFrame
+            videoRef={videoRef}
+            zoomRange={zoomRange}
+            zoom={zoom}
+            onZoomChange={handleZoomChange}
+          />
           <p className="helper-text">Ustaw twarz w centrum kadru w dobrze oświetlonym miejscu.</p>
           <div className="actions-row inline">
             <Button variant="primary" onClick={captureAndEnroll} disabled={busy}>Zapisz próbkę</Button>
