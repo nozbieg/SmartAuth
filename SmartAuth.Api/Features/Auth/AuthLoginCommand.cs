@@ -38,8 +38,19 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
 
         var flags = cfg.GetSection("FeatureFlags").Get<FeatureFlags>()!;
         var methods = new List<string>();
-        if (flags.twofa_code && user.Authenticators.Any(a => a.Type == AuthenticatorType.Totp && a.IsActive)) methods.Add("totp");
-        if (flags.twofa_face && user.Biometrics.Any(b => b.Kind == AuthenticatorType.Face && b.IsActive)) methods.Add("face");
+        
+        var hasActiveTotp = user.Authenticators.Any(a => a.Type == AuthenticatorType.Totp && a.IsActive);
+        if (hasActiveTotp)
+        {
+            methods.Add("totp");
+        }
+        else if (flags.twofa_code)
+        {
+            methods.Add("code");
+        }
+        
+        if (flags.twofa_face && user.Biometrics.Any(b => b.Kind == AuthenticatorType.Face && b.IsActive)) 
+            methods.Add("face");
 
         user.LastLoginAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);

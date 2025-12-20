@@ -20,19 +20,21 @@ public class TwoFaTotpEnableCommandHandler(AuthDbContext db, IHttpContextAccesso
 {
     public async Task<CommandResult<TwoFaTotpEnableResult>> Handle(TwoFaTotpEnableCommand req, CancellationToken ct)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Unauthorized());
+        var (_, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult<TwoFaTotpEnableResult>.Fail(authError);
 
-        var user = await db.Users.Include(u => u.Authenticators).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.NotFound("User", email));
+        var (user, userError) = await HandlerHelpers.GetUserWithAuthenticatorsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult<TwoFaTotpEnableResult>.Fail(userError);
 
-        var pending = user.Authenticators.FirstOrDefault(a => a.Id == req.SetupId && !a.IsActive && a.Type == AuthenticatorType.Totp);
-        if (pending is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.NotFound("PendingTotp", req.SetupId.ToString()));
+        var pending = user!.Authenticators.FirstOrDefault(a => a.Id == req.SetupId && !a.IsActive && a.Type == AuthenticatorType.Totp);
+        if (pending is null)
+            return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.NotFound("PendingTotp", req.SetupId.ToString()));
 
         var ok = Totp.ValidateCode(pending.Secret, req.Code);
-        if (!ok) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Unauthorized());
+        if (!ok)
+            return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Unauthorized());
 
         pending.IsActive = true;
         pending.LastUsedAt = DateTimeOffset.UtcNow;

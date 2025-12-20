@@ -9,22 +9,18 @@ public sealed class TwoFaFaceDisableCommandHandler(IHttpContextAccessor accessor
 {
     public async Task<CommandResult> Handle(TwoFaFaceDisableCommand request, CancellationToken ct)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx is null)
-            return CommandResult.Fail(Errors.Internal(Messages.System.MissingHttpContext));
+        var (ctx, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult.Fail(authError);
 
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null)
-            return CommandResult.Fail(Errors.Unauthorized());
+        var db = ctx!.RequestServices.GetRequiredService<AuthDbContext>();
+        var (user, userError) = await HandlerHelpers.GetUserWithBiometricsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult.Fail(userError);
 
-        var db = ctx.RequestServices.GetRequiredService<AuthDbContext>();
-        var user = await db.Users.Include(u => u.Biometrics).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null)
-            return CommandResult.Fail(Errors.NotFound(nameof(User), email));
-
-        var affected = user.Biometrics.Where(b => b.Kind == AuthenticatorType.Face && b.IsActive).ToList();
+        var affected = user!.Biometrics.Where(b => b.Kind == AuthenticatorType.Face && b.IsActive).ToList();
         if (affected.Count == 0)
-            return CommandResult.Fail(Errors.NotFound("FaceBiometric", email));
+            return CommandResult.Fail(Errors.NotFound("FaceBiometric", email!));
 
         foreach (var bio in affected)
         {

@@ -24,56 +24,36 @@ public sealed class TwoFaFaceVerifyCommandHandler(
 {
     public async Task<CommandResult<TwoFaCodeVerifyResult>> Handle(TwoFaFaceVerifyCommand req, CancellationToken ct)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
+        var (ctx, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(authError);
 
-        var flags = configuration.GetSection("FeatureFlags").Get<FeatureFlags>()
-                    ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
-        if (!flags.twofa_face)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Forbidden(Messages.TwoFactor.Face2FaDisabled));
+        var featureError = HandlerHelpers.CheckFace2FaEnabled(configuration);
+        if (featureError is not null)
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(featureError);
 
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Unauthorized());
+        var db = ctx!.RequestServices.GetRequiredService<AuthDbContext>();
+        var (user, userError) = await HandlerHelpers.GetUserWithBiometricsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(userError);
 
-        var db = ctx.RequestServices.GetRequiredService<AuthDbContext>();
-        var user = await db.Users.Include(u => u.Biometrics).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.NotFound(nameof(User), email));
-
-        var faceReferences = user.Biometrics.Where(b => b.Kind == AuthenticatorType.Face).ToList();
+        var faceReferences = user!.Biometrics.Where(b => b.Kind == AuthenticatorType.Face).ToList();
         if (faceReferences.Count == 0)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.NotFound("FaceBiometric", email));
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.NotFound("FaceBiometric", email!));
 
-        FaceImagePayload payload;
-        try
-        {
-            payload = ImagePayloadDecoder.DecodeBase64(req.ImageBase64);
-        }
-        catch (Exception ex)
-        {
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Validation(ex.Message));
-        }
+        var (payload, decodeError) = HandlerHelpers.DecodeImagePayload(req.ImageBase64);
+        if (decodeError is not null)
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(decodeError);
 
-        FaceVerificationResult verification;
-        try
-        {
-            verification = await recognition.VerifyAsync(payload, faceReferences, ct);
-        }
-        catch (FaceRecognitionException fre)
-        {
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Validation(fre.Message, new Dictionary<string, object>
-            {
-                ["code"] = fre.Code
-            }));
-        }
+        var (verification, verifyError) = await HandlerHelpers.TryVerifyFaceAsync(recognition, payload, faceReferences, ct);
+        if (verifyError is not null)
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(verifyError);
 
-        verification.MatchedBiometric.QualityScore = verification.Analysis.Quality.Overall;
+        verification!.MatchedBiometric.QualityScore = verification.Analysis.Quality.Overall;
         verification.MatchedBiometric.IsActive = true;
         await db.SaveChangesAsync(ct);
 
-        var jwt = TokenUtilities.IssueAccessToken(configuration, email, email);
+        var jwt = TokenUtilities.IssueAccessToken(configuration, email!, email!);
         return CommandResult<TwoFaCodeVerifyResult>.Ok(new TwoFaCodeVerifyResult(jwt));
     }
 }

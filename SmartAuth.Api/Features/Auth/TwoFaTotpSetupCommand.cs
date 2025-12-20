@@ -27,26 +27,26 @@ public class TwoFaTotpSetupCommandHandler(
         if (opts.Digits < 4 || opts.Digits > 10)
             return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal(Messages.TwoFactor.TotpInvalidConfiguration));
 
-        var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Unauthorized());
+        var (_, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult<TwoFaTotpSetupResult>.Fail(authError);
 
-        var user = await db.Users.Include(u => u.Authenticators).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.NotFound("User", email));
+        var (user, userError) = await HandlerHelpers.GetUserWithAuthenticatorsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult<TwoFaTotpSetupResult>.Fail(userError);
 
         if (req.ForceRestart)
         {
-            var allTotp = user.Authenticators.Where(a => a.Type == AuthenticatorType.Totp).ToList();
-            if (allTotp.Any())
+            var allTotp = user!.Authenticators.Where(a => a.Type == AuthenticatorType.Totp).ToList();
+            if (allTotp.Count != 0)
             {
                 db.UserAuthenticators.RemoveRange(allTotp);
                 await db.SaveChangesAsync(ct);
             }
         }
 
-        var pending = user.Authenticators.Where(a => a.Type == AuthenticatorType.Totp && !a.IsActive).ToList();
-        if (pending.Any())
+        var pending = user!.Authenticators.Where(a => a.Type == AuthenticatorType.Totp && !a.IsActive).ToList();
+        if (pending.Count != 0)
         {
             db.UserAuthenticators.RemoveRange(pending);
             await db.SaveChangesAsync(ct);
@@ -57,7 +57,7 @@ public class TwoFaTotpSetupCommandHandler(
             return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Conflict(Messages.TwoFactor.TotpAlreadyEnabled));
 
         var secret = Totp.GenerateSecret();
-        var uri = msClient.BuildOtpAuthUri(email, secret);
+        var uri = msClient.BuildOtpAuthUri(email!, secret);
 
         var auth = new UserAuthenticator
         {
@@ -72,7 +72,7 @@ public class TwoFaTotpSetupCommandHandler(
         using var qrGen = new QRCodeGenerator();
         var data = qrGen.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
         var pngQr = new PngByteQRCode(data).GetGraphic(10);
-        var b64 = Convert.ToBase64String((byte[])pngQr);
+        var b64 = Convert.ToBase64String(pngQr);
 
         return CommandResult<TwoFaTotpSetupResult>.Ok(new TwoFaTotpSetupResult(auth.Id, secret, uri, b64));
     }

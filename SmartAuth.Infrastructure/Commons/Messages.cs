@@ -1,9 +1,13 @@
 ﻿namespace SmartAuth.Infrastructure.Commons;
 
+/// <summary>
+/// Centralized application messages - easy to localize.
+/// All texts used in Result/Error messages should come from this class.
+/// </summary>
 public static class Messages
 {
     /// <summary>
-    /// Komunikaty walidacji pól formularzy
+    /// Form field validation messages.
     /// </summary>
     public static class Validation
     {
@@ -13,7 +17,6 @@ public static class Messages
         public static string TooLong(string fieldName, int maxLength) => $"{fieldName} może mieć maksymalnie {maxLength} znaków.";
         public static string InvalidFormat(string fieldName) => $"Format {fieldName} jest nieprawidłowy.";
         
-        // Konkretne pola
         public const string EmailRequired = "Email jest wymagany.";
         public const string PasswordRequired = "Hasło jest wymagane.";
         public const string CodeRequired = "Kod jest wymagany.";
@@ -22,7 +25,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty błędów autoryzacji i uwierzytelniania
+    /// Authorization and authentication error messages.
     /// </summary>
     public static class Auth
     {
@@ -35,7 +38,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty związane z 2FA (weryfikacją dwuskładnikową)
+    /// Two-factor authentication (2FA) messages.
     /// </summary>
     public static class TwoFactor
     {
@@ -50,7 +53,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty sukcesu operacji
+    /// Success operation messages.
     /// </summary>
     public static class Success
     {
@@ -62,7 +65,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty błędów zasobów (CRUD)
+    /// Resource error messages (CRUD operations).
     /// </summary>
     public static class Resource
     {
@@ -74,7 +77,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty błędów systemowych
+    /// System error messages.
     /// </summary>
     public static class System
     {
@@ -86,7 +89,7 @@ public static class Messages
     }
 
     /// <summary>
-    /// Komunikaty związane z przetwarzaniem obrazów biometrycznych
+    /// Biometric image processing messages.
     /// </summary>
     public static class Biometrics
     {

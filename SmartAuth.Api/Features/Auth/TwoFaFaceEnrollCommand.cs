@@ -26,60 +26,37 @@ public sealed class TwoFaFaceEnrollCommandHandler(
 {
     public async Task<CommandResult<TwoFaFaceEnrollResult>> Handle(TwoFaFaceEnrollCommand req, CancellationToken ct)
     {
+        var (ctx, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(authError);
 
-        var ctx = accessor.HttpContext;
-        if (ctx is null)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
+        var featureError = HandlerHelpers.CheckFace2FaEnabled(configuration);
+        if (featureError is not null)
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(featureError);
 
-        var flags = configuration.GetSection("FeatureFlags").Get<FeatureFlags>()
-                    ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
-        if (!flags.twofa_face)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Forbidden(Messages.TwoFactor.Face2FaDisabled));
+        var db = ctx!.RequestServices.GetRequiredService<AuthDbContext>();
+        var (user, userError) = await HandlerHelpers.GetUserWithBiometricsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(userError);
 
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Unauthorized());
+        var (payload, decodeError) = HandlerHelpers.DecodeImagePayload(req.ImageBase64);
+        if (decodeError is not null)
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(decodeError);
 
-        var db = ctx.RequestServices.GetRequiredService<AuthDbContext>();
-        var user = await db.Users.Include(u => u.Biometrics).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.NotFound(nameof(User), email));
+        var (enrollment, enrollError) = await HandlerHelpers.TryEnrollFaceAsync(recognition, payload, ct);
+        if (enrollError is not null)
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(enrollError);
 
-        FaceImagePayload payload;
-        try
-        {
-            payload = ImagePayloadDecoder.DecodeBase64(req.ImageBase64);
-        }
-        catch (Exception ex)
-        {
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Validation(ex.Message));
-        }
-
-
-        FaceEnrollmentResult enrollment;
-        try
-        {
-            enrollment = await recognition.EnrollAsync(payload, ct);
-        }
-        catch (FaceRecognitionException fre)
-        {
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Validation(fre.Message, new Dictionary<string, object>
-            {
-                ["code"] = fre.Code
-            }));
-        }
-
-        foreach (var existing in user.Biometrics.Where(b => b.Kind == AuthenticatorType.Face))
+        foreach (var existing in user!.Biometrics.Where(b => b.Kind == AuthenticatorType.Face))
         {
             existing.IsActive = false;
         }
 
-        var biometrics = enrollment.Analysis.Embedding.Embedding;
         var bio = new UserBiometric
         {
             UserId = user.Id,
             Kind = AuthenticatorType.Face,
-            Embedding = biometrics,
+            Embedding = enrollment!.Analysis.Embedding.Embedding,
             Version = enrollment.Analysis.Embedding.ModelVersion,
             QualityScore = enrollment.Analysis.Quality.Overall,
             LivenessMethod = enrollment.Analysis.Liveness.Method,

@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using SmartAuth.Infrastructure.Biometrics;
+using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Api.Utilities;
 

@@ -15,16 +15,17 @@ public class TwoFaTotpDisableCommandHandler(AuthDbContext db, IHttpContextAccess
 {
     public async Task<CommandResult<TwoFaTotpDisableResult>> Handle(TwoFaTotpDisableCommand req, CancellationToken ct)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.Unauthorized());
+        var (_, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null)
+            return CommandResult<TwoFaTotpDisableResult>.Fail(authError);
 
-        var user = await db.Users.Include(u => u.Authenticators).FirstOrDefaultAsync(u => u.Email == email, ct);
-        if (user is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.NotFound("User", email));
+        var (user, userError) = await HandlerHelpers.GetUserWithAuthenticatorsAsync(db, email!, ct);
+        if (userError is not null)
+            return CommandResult<TwoFaTotpDisableResult>.Fail(userError);
 
-        var active = user.Authenticators.FirstOrDefault(a => a.Type == AuthenticatorType.Totp && a.IsActive);
-        if (active is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.NotFound("ActiveTotp", email));
+        var active = user!.Authenticators.FirstOrDefault(a => a.Type == AuthenticatorType.Totp && a.IsActive);
+        if (active is null)
+            return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.NotFound("ActiveTotp", email!));
 
         db.UserAuthenticators.Remove(active);
         await db.SaveChangesAsync(ct);

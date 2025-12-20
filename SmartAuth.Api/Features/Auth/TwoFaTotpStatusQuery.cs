@@ -10,12 +10,13 @@ public class TwoFaTotpStatusQueryHandler(AuthDbContext db, IHttpContextAccessor 
 {
     public async Task<CommandResult<TwoFaTotpStatusResult>> Handle(TwoFaTotpStatusQuery req, CancellationToken ct)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
-        var email = TokenUtilities.GetSubjectFromToken(ctx);
-        if (email is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Unauthorized());
+        var (_, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+        if (authError is not null) 
+            return CommandResult<TwoFaTotpStatusResult>.Fail(authError);
 
-        var active = await db.UserAuthenticators.AnyAsync(a => a.IsActive && a.Type == AuthenticatorType.Totp && a.User != null && a.User.Email == email, ct);
+        var active = await db.UserAuthenticators.AnyAsync(
+            a => a.IsActive && a.Type == AuthenticatorType.Totp && a.User != null && a.User.Email == email, ct);
+        
         return CommandResult<TwoFaTotpStatusResult>.Ok(new TwoFaTotpStatusResult(active));
     }
 }

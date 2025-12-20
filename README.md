@@ -1,6 +1,6 @@
 ﻿# SmartAuth
 
-Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL (z rozszerzeniem `pgvector`) i SPA (React + Vite). Aktualna konfiguracja wspiera klasyczne logowanie e‑mail + hasło oraz etapowy model wieloskładnikowy (kod 2FA – placeholder oraz wstępna konfiguracja TOTP w interfejsie).
+Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 10, PostgreSQL (z rozszerzeniem `pgvector`) i SPA (React + Vite). Aktualna konfiguracja wspiera klasyczne logowanie e‑mail + hasło oraz wieloskładnikowe uwierzytelnianie (2FA) z obsługą TOTP i biometrii twarzy.
 
 ## Spis treści
 1. Cel projektu
@@ -25,8 +25,10 @@ Zaawansowany (referencyjny) system uwierzytelniania oparty o .NET 9, PostgreSQL 
 18. Skrócone komendy (cheat‑sheet)
 19. Pokrycie testów (coverage)
 20. Modele biometryczne (Face / Liveness)
-20.5 Ręczne wywołanie pobierania modeli
 21. Filtry, rozszerzenia i wewnętrzne komponenty
+22. System komunikatów (Messages)
+23. Helper Methods (HandlerHelpers)
+24. Mediator Pattern (CQRS-lite)
 
 ---
 ## 1. Cel projektu
@@ -58,13 +60,13 @@ Struktura solution:
 ```
 
 ## 3. Stos technologiczny
-Backend: .NET 9, Minimal API, EF Core 9, Npgsql, pgvector EF, OpenTelemetry, Swashbuckle, ONNX Runtime (inferencja modeli biometrycznych), QRCoder (generowanie kodów QR dla provisioning TOTP w przyszłości).
+Backend: .NET 10, Minimal API, EF Core 10, Npgsql, pgvector EF, OpenTelemetry, Scalar (dokumentacja API), ONNX Runtime (inferencja modeli biometrycznych), QRCoder (generowanie kodów QR dla TOTP).
 Frontend: React 18, Vite, TypeScript, React Router, Vitest, Testing Library.
 Inne: Testcontainers, PBKDF2 (Rfc2898DeriveBytes) dla haseł, JWT (HMAC SHA256).
 
 ## 4. Szybki start (TL;DR)
 Wymagania lokalne:
-- .NET SDK 9
+- .NET SDK 10
 - Node.js (zalecane LTS, np. 20.x) + npm
 - Docker Desktop (musi działać dla Testcontainers oraz kontenera bazy przy AppHost)
 
@@ -209,7 +211,7 @@ Request JSON:
 ```
 Response 200:
 ```
-{ "message": "Registration completed successfully" }
+{ "message": "Rejestracja zakończona pomyślnie." }
 ```
 Błędy: 409 (email istnieje), 400 (walidacja).
 
@@ -571,6 +573,190 @@ Krótki opis istotnych elementów kodu:
 - `MicrosoftAuthenticatorClient` – (zalążek) generowania materiałów provisioning dla aplikacji TOTP (docelowo QR kod + otpauth URI).
 
 > Dodając nowe komponenty, zachowuj konwencję: publikuj prostą metodę rozszerzeń do rejestracji w DI, aby utrzymać `Program.cs` zwięzły.
+
+## 22. System komunikatów (Messages)
+Aplikacja wykorzystuje scentralizowany system komunikatów zdefiniowany w `SmartAuth.Infrastructure/Commons/Messages.cs`. Wszystkie komunikaty błędów i sukcesu są w języku polskim i pogrupowane w kategorie:
+
+### Struktura klasy Messages:
+```csharp
+public static class Messages
+{
+    public static class Validation { ... }    // Walidacja pól formularzy
+    public static class Auth { ... }          // Błędy autoryzacji
+    public static class TwoFactor { ... }     // Komunikaty 2FA
+    public static class Success { ... }       // Komunikaty sukcesu
+    public static class Resource { ... }      // Błędy zasobów (CRUD)
+    public static class System { ... }        // Błędy systemowe
+    public static class Biometrics { ... }    // Przetwarzanie biometrii
+}
+```
+
+### Przykłady użycia:
+```csharp
+// W walidatorze
+if (string.IsNullOrWhiteSpace(request.Email)) 
+    Metadata.Add(nameof(request.Email), Messages.Validation.EmailRequired);
+
+// W handlerze
+return CommandResult<T>.Fail(Errors.NotFound(nameof(User), email));
+// Zwróci: "Nie znaleziono User 'email@example.com'."
+```
+
+### Korzyści:
+- **DRY** – komunikaty zdefiniowane w jednym miejscu
+- **Łatwa lokalizacja** – w przyszłości można zamienić na zasoby `.resx` lub bibliotekę lokalizacji (np. `IStringLocalizer`)
+- **Spójność** – jednolite komunikaty w całej aplikacji
+- **Kategoryzacja** – logiczne grupowanie ułatwia zarządzanie
+
+### Dodawanie nowych komunikatów:
+1. Zidentyfikuj kategorię (Validation, Auth, Resource, System, itp.)
+2. Dodaj stałą lub metodę w odpowiedniej klasie zagnieżdżonej
+3. Użyj w kodzie przez `Messages.Kategoria.NazwaKomunikatu`
+
+## 23. Helper Methods (HandlerHelpers)
+Klasa `SmartAuth.Api/Utilities/HandlerHelpers.cs` zawiera współdzielone metody pomocnicze dla handlerów, eliminując powtarzalny kod (DRY):
+
+| Metoda | Opis |
+|--------|------|
+| `GetAuthenticatedContext()` | Pobiera HttpContext i email z tokenu JWT |
+| `CheckFace2FaEnabled()` | Sprawdza czy funkcja Face 2FA jest włączona |
+| `DecodeImagePayload()` | Dekoduje obraz twarzy z Base64 |
+| `TryEnrollFaceAsync()` | Rejestracja twarzy z obsługą błędów |
+| `TryVerifyFaceAsync()` | Weryfikacja twarzy z obsługą błędów |
+| `GetUserWithAuthenticatorsAsync()` | Pobiera użytkownika z Include dla Authenticators |
+| `GetUserWithBiometricsAsync()` | Pobiera użytkownika z Include dla Biometrics |
+
+### Przykład użycia w handlerze:
+```csharp
+public async Task<CommandResult<T>> Handle(TRequest req, CancellationToken ct)
+{
+    var (ctx, email, authError) = HandlerHelpers.GetAuthenticatedContext(accessor);
+    if (authError is not null)
+        return CommandResult<T>.Fail(authError);
+
+    var (user, userError) = await HandlerHelpers.GetUserWithAuthenticatorsAsync(db, email!, ct);
+    if (userError is not null)
+        return CommandResult<T>.Fail(userError);
+
+    // ... logika biznesowa
+}
+```
+
+## 24. Mediator Pattern (CQRS-lite)
+Aplikacja wykorzystuje własną, lekką implementację wzorca Mediator (`SmartAuth.Infrastructure/Commons/Mediator.cs`) inspirowaną biblioteką MediatR, ale znacznie uproszczoną.
+
+### Architektura
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      IMediator                              │
+│  Send<TResponse>(IRequest<TResponse> req)                   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       Mediator                              │
+├─────────────────────────────────────────────────────────────┤
+│  1. ValidateRequest() - uruchom wszystkie IValidator<T>     │
+│  2. HandleRequestAsync() - znajdź i wywołaj handler         │
+│  3. Obsługa wyjątków - logowanie + Error z traceId          │
+└─────────────────────────────────────────────────────────────┘
+                            │
+            ┌───────────────┴───────────────┐
+            ▼                               ▼
+┌─────────────────────┐         ┌─────────────────────┐
+│  IValidator<TReq>   │         │ IRequestHandler<    │
+│  Validate()         │         │   TReq, TResp>      │
+└─────────────────────┘         │  Handle()           │
+                                └─────────────────────┘
+```
+
+### Główne interfejsy
+```csharp
+// Marker dla requestów
+public interface IRequest<TResponse> { }
+
+// Handler przetwarzający request
+public interface IRequestHandler<in TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    Task<TResponse> Handle(TRequest req, CancellationToken ct);
+}
+
+// Mediator - punkt wejścia
+public interface IMediator
+{
+    Task<TResponse> Send<TResponse>(IRequest<TResponse> req, CancellationToken ct = default);
+}
+```
+
+### Przepływ przetwarzania
+1. **Walidacja** - Mediator szuka wszystkich zarejestrowanych `IValidator<TRequest>` i wykonuje je sekwencyjnie
+2. **Obsługa** - Jeśli walidacja przeszła, Mediator znajduje `IRequestHandler<TRequest, TResponse>` i wywołuje `Handle()`
+3. **Błędy** - Nieobsłużone wyjątki są przechwytywane, logowane i konwertowane na `CommandResult.Fail()` z traceId
+
+### Optymalizacje
+- **Cache refleksji** - `ConcurrentDictionary` dla `MethodInfo` walidatorów i handlerów
+- **Typed invokers** - generyczne metody `InvokeValidatorTyped<T>` i `InvokeHandlerTyped<TReq, TResp>` dla bezpiecznego wywołania
+
+### Przykład definicji Command + Handler
+```csharp
+// Request (Command)
+public record AuthLoginCommand(string Email, string Password) 
+    : IRequest<CommandResult<AuthLoginResult>>;
+
+// Response
+public record AuthLoginResult(bool Requires2Fa, string? Token, List<string>? Methods);
+
+// Validator (opcjonalny)
+public class AuthLoginValidator : Validator<AuthLoginCommand>
+{
+    protected override Task ValidateParams(AuthLoginCommand request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email)) 
+            Metadata.Add(nameof(request.Email), Messages.Validation.EmailRequired);
+        if (string.IsNullOrWhiteSpace(request.Password)) 
+            Metadata.Add(nameof(request.Password), Messages.Validation.PasswordRequired);
+        return Task.CompletedTask;
+    }
+}
+
+// Handler
+public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
+    : IRequestHandler<AuthLoginCommand, CommandResult<AuthLoginResult>>
+{
+    public async Task<CommandResult<AuthLoginResult>> Handle(
+        AuthLoginCommand req, CancellationToken ct)
+    {
+        // ... logika biznesowa
+        return CommandResult<AuthLoginResult>.Ok(new AuthLoginResult(...));
+    }
+}
+```
+
+### Użycie w endpoincie
+```csharp
+app.MapPost("/api/auth/login", async (AuthLoginCommand cmd, IMediator mediator) =>
+{
+    var result = await mediator.Send(cmd);
+    return result.ToHttpResult();
+});
+```
+
+### Rejestracja w DI
+Handlery i walidatory są rejestrowane automatycznie przez metody rozszerzeń:
+```csharp
+// W Program.cs lub Startup
+services.AddScoped<IMediator, Mediator>();
+services.AddHandlers();    // Skanuje assembly i rejestruje IRequestHandler<,>
+services.AddValidators();  // Skanuje assembly i rejestruje IValidator<>
+```
+
+### Korzyści
+- **Separacja odpowiedzialności** - logika biznesowa w handlerach, walidacja w walidatorach
+- **Testowalność** - łatwe mockowanie IMediator w testach
+- **Jednolita obsługa błędów** - wszystkie wyjątki przechwycone i skonwertowane na CommandResult
+- **Tracing** - automatyczne dodawanie traceId do błędów (OpenTelemetry)
+- **Brak zależności zewnętrznych** - własna implementacja, pełna kontrola
 
 ---
 Happy coding! Jeśli czegoś brakuje – rozbuduj README wraz z ewolucją projektu.
