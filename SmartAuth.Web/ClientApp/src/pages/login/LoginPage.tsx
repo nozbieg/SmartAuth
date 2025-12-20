@@ -11,8 +11,8 @@ type Step = "credentials" | "twofa";
 type TwoFAMethod = "totp" | "code" | "face" | "voice";
 
 const methodLabels: Record<TwoFAMethod, string> = {
-    totp: "TOTP",
-    code: "Kod SMS",
+    totp: "Kod TOTP",
+    code: "Kod TOTP",
     face: "Biometria",
     voice: "Głos"
 };
