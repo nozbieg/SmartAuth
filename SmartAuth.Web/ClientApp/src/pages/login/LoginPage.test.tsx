@@ -9,9 +9,10 @@ vi.mock('../../auth/FeatureFlagsContext', () => ({
 vi.mock('../../auth/AuthService', () => {
   const loginWithPassword = vi.fn();
   const verifyCode = vi.fn();
+  const verifyFace = vi.fn();
   const saveJwt = vi.fn();
   class ApiError extends Error { metadata?: Record<string,string>; constructor(message: string, metadata?: Record<string,string>) { super(message); this.metadata = metadata; } }
-  return { loginWithPassword, verifyCode, saveJwt, ApiError };
+  return { loginWithPassword, verifyCode, verifyFace, saveJwt, ApiError };
 });
 
 vi.mock('../../components/layout/AuthLayout', () => ({ default: ({ children }: any) => <div data-testid="layout">{children}</div> }));
@@ -58,7 +59,7 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Zaloguj się/i }));
 
     await screen.findByRole('heading', { name: /Drugi krok/i });
-    expect(screen.getByRole('tab', { name: /CODE/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Kod SMS/i })).toBeInTheDocument();
   });
 
   it('weryfikuje kod TOTP i zapisuje końcowy jwt', async () => {
