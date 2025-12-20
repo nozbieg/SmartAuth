@@ -33,7 +33,7 @@ public sealed class TwoFaFaceVerifyCommandHandler(
             return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Missing HttpContext"));
 
         var flags = configuration.GetSection("FeatureFlags").Get<FeatureFlags>()
-                    ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled);
+                    ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
         if (!flags.twofa_face)
             return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Forbidden("face_2fa_disabled"));
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SmartAuth.Api.Extensions;
 using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Commons;

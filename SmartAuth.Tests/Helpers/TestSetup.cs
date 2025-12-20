@@ -15,7 +15,7 @@ namespace SmartAuth.Tests.Helpers;
 
 public static class TestSetup
 {
-    public static Dictionary<string,string?> BaseJwtSettings => new()
+    public static Dictionary<string, string?> BaseJwtSettings => new()
     {
         ["Jwt:Key"] = "12345678901234567890123456789012",
         ["Jwt:Issuer"] = "test-issuer",
@@ -24,15 +24,18 @@ public static class TestSetup
         ["Jwt:TempTokenMinutes"] = "5"
     };
 
-    public static IConfiguration BuildConfig(bool twoFaCodeEnabled = false, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
+    public static IConfiguration BuildConfig(bool twoFaCodeEnabled = false, bool twoFaFaceEnabled = false,
+        IDictionary<string, string?>? overrides = null)
     {
-        var dict = new Dictionary<string,string?>(BaseJwtSettings)
+        var dict = new Dictionary<string, string?>(BaseJwtSettings)
         {
             ["FeatureFlags:twofa_code"] = twoFaCodeEnabled ? "true" : "false",
-            ["FeatureFlags:twofa_face"] = twoFaFaceEnabled ? "true" : "false"
+            ["FeatureFlags:twofa_face"] = twoFaFaceEnabled ? "true" : "false",
+            ["FeatureFlags:twofa_voice"] = "false"
         };
         if (overrides is not null)
-            foreach (var kv in overrides) dict[kv.Key] = kv.Value;
+            foreach (var kv in overrides)
+                dict[kv.Key] = kv.Value;
         return new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
     }
 
@@ -56,10 +59,12 @@ public static class TestSetup
                 IsActive = true
             });
         }
+
         return user;
     }
 
-    public static async Task<User> AddUserAsync(AuthDbContext db, string email, string password = "Passw0rd!", bool totpActive = false)
+    public static async Task<User> AddUserAsync(AuthDbContext db, string email, string password = "Passw0rd!",
+        bool totpActive = false)
     {
         var user = CreateUserEntity(email, password, totpActive);
         db.Users.Add(user);
@@ -67,7 +72,8 @@ public static class TestSetup
         return user;
     }
 
-    public static (ServiceProvider provider, IMediator mediator) BuildMediator(string cs, bool twoFaCodeEnabled = false, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
+    public static (ServiceProvider provider, IMediator mediator) BuildMediator(string cs, bool twoFaCodeEnabled = false,
+        bool twoFaFaceEnabled = false, IDictionary<string, string?>? overrides = null)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -89,7 +95,9 @@ public static class TestSetup
         return ((ServiceProvider)sp, mediator);
     }
 
-    public static (IHttpContextAccessor accessor, ServiceProvider provider, IConfiguration cfg) BuildHttpContextWithUser(string cs, string? emailClaim, bool twoFaCodeEnabled = true, bool twoFaFaceEnabled = false, IDictionary<string,string?>? overrides = null)
+    public static (IHttpContextAccessor accessor, ServiceProvider provider, IConfiguration cfg)
+        BuildHttpContextWithUser(string cs, string? emailClaim, bool twoFaCodeEnabled = true,
+            bool twoFaFaceEnabled = false, IDictionary<string, string?>? overrides = null)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -110,6 +118,7 @@ public static class TestSetup
             var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, emailClaim) };
             ctx.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));
         }
+
         var accessor = new FixedHttpContextAccessor { HttpContext = ctx };
         return (accessor, (ServiceProvider)sp, cfg);
     }

@@ -13,7 +13,7 @@ public static class FeatureFlagEndpoints
                 var section = cfg.GetSection("FeatureFlags");
                 var flags = section.Exists()
                     ? section.Get<FeatureFlags>()
-                    : new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled);
+                    : new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
                 return Results.Json(flags);
             });
         return app;
