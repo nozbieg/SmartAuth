@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SmartAuth.Api.Extensions;
 using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Commons;
@@ -17,6 +18,8 @@ public static class TestDiFactory
         var baseSettings = new Dictionary<string, string?>
         {
             ["FeatureFlags:twofa_code"] = twoFaEnabled ? "true" : "false",
+            ["FeatureFlags:twofa_face"] = "false",
+            ["FeatureFlags:twofa_voice"] = "false",
             ["Jwt:Key"] = "12345678901234567890123456789012",
             ["Jwt:Issuer"] = "test-issuer",
             ["Jwt:Audience"] = "test-audience",
