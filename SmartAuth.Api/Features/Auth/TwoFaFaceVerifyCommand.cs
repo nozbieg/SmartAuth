@@ -15,7 +15,7 @@ public sealed class TwoFaFaceVerifyValidator : Validator<TwoFaFaceVerifyCommand>
     protected override Task ValidateParams(TwoFaFaceVerifyCommand request)
     {
         if (string.IsNullOrWhiteSpace(request.ImageBase64))
-            Metadata.Add(nameof(request.ImageBase64), "Face image payload is required.");
+            Metadata.Add(nameof(request.ImageBase64), "Obraz twarzy jest wymagany.");
         return Task.CompletedTask;
     }
 }
@@ -30,12 +30,12 @@ public sealed class TwoFaFaceVerifyCommandHandler(
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Missing HttpContext"));
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
 
         var flags = configuration.GetSection("FeatureFlags").Get<FeatureFlags>()
                     ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
         if (!flags.twofa_face)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Forbidden("face_2fa_disabled"));
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Forbidden("Weryfikacja twarzy 2FA jest wyłączona"));
 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null)

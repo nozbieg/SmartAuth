@@ -11,7 +11,7 @@ public class TwoFaCodeVerifyValidator : Validator<TwoFaCodeVerifyCommand>
 {
     protected override Task ValidateParams(TwoFaCodeVerifyCommand request)
     {
-        if (string.IsNullOrEmpty(request.Code)) Metadata.Add(nameof(request.Code), "Code is required");
+        if (string.IsNullOrEmpty(request.Code)) Metadata.Add(nameof(request.Code), "Kod jest wymagany");
         return Task.CompletedTask;
     }
 }
@@ -25,7 +25,7 @@ public class
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Missing HttpContext"));
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Unauthorized());
 

@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using SmartAuth.Api.Utilities;
-using SmartAuth.Domain.Entities;
-using SmartAuth.Infrastructure;
-using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Api.Features.Auth;
 
@@ -15,7 +11,7 @@ public sealed class TwoFaFaceDisableCommandHandler(IHttpContextAccessor accessor
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult.Fail(Errors.Internal("Missing HttpContext"));
+            return CommandResult.Fail(Errors.Internal("Brak kontekstu HTTP"));
 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null)

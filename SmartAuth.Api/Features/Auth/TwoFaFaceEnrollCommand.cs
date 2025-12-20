@@ -1,10 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using SmartAuth.Api.Contracts;
 using SmartAuth.Api.Utilities;
-using SmartAuth.Domain.Entities;
-using SmartAuth.Infrastructure;
 using SmartAuth.Infrastructure.Biometrics;
-using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Api.Features.Auth;
 
@@ -17,7 +13,7 @@ public sealed class TwoFaFaceEnrollValidator : Validator<TwoFaFaceEnrollCommand>
     protected override Task ValidateParams(TwoFaFaceEnrollCommand request)
     {
         if (string.IsNullOrWhiteSpace(request.ImageBase64))
-            Metadata.Add(nameof(request.ImageBase64), "Face image payload is required.");
+            Metadata.Add(nameof(request.ImageBase64), "Obraz twarzy jest wymagany.");
         return Task.CompletedTask;
     }
 }
@@ -33,12 +29,12 @@ public sealed class TwoFaFaceEnrollCommandHandler(
 
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Internal("Missing HttpContext"));
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
 
         var flags = configuration.GetSection("FeatureFlags").Get<FeatureFlags>()
                     ?? new FeatureFlags(FeatureFlagsConfig.TwoFaCodeEnabled, FeatureFlagsConfig.TwoFaFaceEnabled, FeatureFlagsConfig.TwoFaVoiceEnabled);
         if (!flags.twofa_face)
-            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Forbidden("face_2fa_disabled"));
+            return CommandResult<TwoFaFaceEnrollResult>.Fail(Errors.Forbidden("Weryfikacja twarzy 2FA jest wyłączona"));
 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null)

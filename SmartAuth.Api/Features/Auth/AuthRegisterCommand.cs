@@ -5,14 +5,14 @@ namespace SmartAuth.Api.Features.Auth;
 public record AuthRegisterCommand(string Email, string Password, string? DisplayName)
     : IRequest<CommandResult<RegisterCompleted>>;
 
-public record RegisterCompleted(string Message = "Registration completed successfully");
+public record RegisterCompleted(string Message = "Rejestracja zakończona pomyślnie");
 
 public class AuthRegisterValidator : Validator<AuthRegisterCommand>
 {
     protected override Task ValidateParams(AuthRegisterCommand request)
     {
-        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email is required");
-        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Password is required");
+        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email jest wymagany");
+        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Hasło jest wymagane");
         return Task.CompletedTask;
     }
 }
@@ -30,7 +30,7 @@ public class AuthRegisterCommandHandler(AuthDbContext db)
 
         var (hash, salt) = AuthCrypto.HashPassword(req.Password);
 
-        var user = new Domain.Entities.User
+        var user = new User
         {
             Email = emailNorm,
             PasswordHash = hash,

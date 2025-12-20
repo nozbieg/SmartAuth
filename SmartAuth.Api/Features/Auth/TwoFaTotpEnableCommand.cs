@@ -10,8 +10,8 @@ public class TwoFaTotpEnableValidator : Validator<TwoFaTotpEnableCommand>
 {
     protected override Task ValidateParams(TwoFaTotpEnableCommand request)
     {
-        if (request.SetupId == Guid.Empty) Metadata.Add(nameof(request.SetupId), "SetupId required");
-        if (string.IsNullOrWhiteSpace(request.Code)) Metadata.Add(nameof(request.Code), "Code required");
+        if (request.SetupId == Guid.Empty) Metadata.Add(nameof(request.SetupId), "SetupId jest wymagany");
+        if (string.IsNullOrWhiteSpace(request.Code)) Metadata.Add(nameof(request.Code), "Kod jest wymagany");
         return Task.CompletedTask;
     }
 }
@@ -22,7 +22,7 @@ public class TwoFaTotpEnableCommandHandler(AuthDbContext db, IHttpContextAccesso
     public async Task<CommandResult<TwoFaTotpEnableResult>> Handle(TwoFaTotpEnableCommand req, CancellationToken ct)
     {
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Internal("Missing HttpContext"));
+        if (ctx is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Unauthorized());
 

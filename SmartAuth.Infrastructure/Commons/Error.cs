@@ -34,7 +34,7 @@ public static class Errors
     public static Error NotFound(string entity, string? id = null) => new()
     {
         Code = "common.not_found",
-        Message = id is null ? $"{entity} not found." : $"{entity} '{id}' not found.",
+        Message = id is null ? $"Nie znaleziono {entity}." : $"Nie znaleziono {entity} '{id}'.",
         Status = HttpStatusCode.NotFound,
         Metadata = new Dictionary<string, object>
         {
@@ -46,35 +46,35 @@ public static class Errors
     public static Error Unauthorized() => new()
     {
         Code = "auth.unauthorized",
-        Message = "You are not authorized to perform this action.",
+        Message = "Nie masz uprawnień do wykonania tej operacji.",
         Status = HttpStatusCode.Unauthorized,
     };
 
     public static Error Forbidden(string? reason = null) => new()
     {
         Code = "auth.forbidden",
-        Message = reason ?? "Access to this resource is forbidden.",
+        Message = reason ?? "Dostęp do tego zasobu jest zabroniony.",
         Status = HttpStatusCode.Forbidden,
     };
 
     public static Error Conflict(string entity, string? reason = null) => new()
     {
         Code = "common.conflict",
-        Message = reason ?? $"{entity} already exists.",
+        Message = reason ?? $"{entity} już istnieje.",
         Status = HttpStatusCode.Conflict,
     };
 
     public static Error InvalidCredentials() => new()
     {
         Code = "auth.invalid_credentials",
-        Message = "The provided credentials are incorrect.",
+        Message = "Podane dane logowania są nieprawidłowe.",
         Status = HttpStatusCode.BadRequest,
     };
 
     public static Error Internal(string? detail = null) => new()
     {
         Code = "system.internal_error",
-        Message = "An unexpected error occurred. Please try again later.",
+        Message = "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
         Detail = detail,
         Status = HttpStatusCode.InternalServerError,
         Metadata = new Dictionary<string, object>(),

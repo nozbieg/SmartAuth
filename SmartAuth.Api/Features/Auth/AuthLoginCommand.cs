@@ -11,8 +11,8 @@ public class AuthLoginValidator : Validator<AuthLoginCommand>
 {
     protected override Task ValidateParams(AuthLoginCommand request)
     {
-        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email is required");
-        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Password is required");
+        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email jest wymagany");
+        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Hasło jest wymagane");
         return Task.CompletedTask;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using SmartAuth.Api.Utilities;
 using QRCoder;
 using SmartAuth.Api.Services;
+using SmartAuth.Api.Utilities;
 
 namespace SmartAuth.Api.Features.Auth;
 
@@ -25,10 +25,10 @@ public class TwoFaTotpSetupCommandHandler(
     {
         var opts = totpOptions.Value;
         if (opts.Digits < 4 || opts.Digits > 10)
-            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Invalid TOTP digits configuration"));
+            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Nieprawidłowa konfiguracja liczby cyfr TOTP"));
 
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Missing HttpContext"));
+        if (ctx is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Unauthorized());
 
@@ -54,9 +54,9 @@ public class TwoFaTotpSetupCommandHandler(
 
         var activeExists = user.Authenticators.Any(a => a.Type == AuthenticatorType.Totp && a.IsActive);
         if (activeExists && !req.ForceRestart)
-            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Conflict("totp_already_enabled"));
+            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Conflict("TOTP jest już włączony"));
 
-        var secret = SmartAuth.Infrastructure.Security.Totp.GenerateSecret();
+        var secret = Totp.GenerateSecret();
         var uri = msClient.BuildOtpAuthUri(email, secret);
 
         var auth = new UserAuthenticator
