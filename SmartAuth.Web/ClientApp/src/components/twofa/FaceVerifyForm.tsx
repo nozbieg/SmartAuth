@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "../ui/Button";
 import { ApiError, verifyFace } from "../../auth/AuthService";
 import { encodeRgbPayload, ensureCanvas } from "../../commons/facePayload";
+import CameraFrame, { type ZoomRange } from "./CameraFrame";
 
 export interface FaceVerifyFormProps {
   tempToken: string;
@@ -14,12 +15,13 @@ export interface FaceVerifyFormProps {
 const FaceVerifyForm: React.FC<FaceVerifyFormProps> = ({ tempToken, onSuccess, onCancel, disabled, onBusyChange }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>("Aby potwierdzić tożsamość, wykonamy krótką analizę twarzy.");
   const [showPermission, setShowPermission] = useState(false);
+  const [zoomRange, setZoomRange] = useState<ZoomRange | null>(null);
+  const [zoom, setZoom] = useState<number | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -28,6 +30,34 @@ const FaceVerifyForm: React.FC<FaceVerifyFormProps> = ({ tempToken, onSuccess, o
       video.play().catch(() => undefined);
     }
     return () => { if (video) video.srcObject = null; };
+  }, [stream]);
+
+  useEffect(() => {
+    if (!stream) {
+      setZoomRange(null);
+      setZoom(null);
+      return;
+    }
+
+    const track = stream.getVideoTracks()[0];
+    if (!track?.getCapabilities) {
+      setZoomRange(null);
+      setZoom(null);
+      return;
+    }
+
+    const capabilities = track.getCapabilities();
+    const zoomCap = (capabilities as MediaTrackCapabilities & { zoom?: MediaSettingsRange }).zoom;
+    if (zoomCap && typeof zoomCap.min === "number" && typeof zoomCap.max === "number") {
+      const step = zoomCap.step && zoomCap.step > 0 ? zoomCap.step : 0.1;
+      const initialZoom = track.getSettings().zoom ?? zoomCap.min;
+      setZoomRange({ min: zoomCap.min, max: zoomCap.max, step });
+      setZoom(initialZoom);
+      applyZoom(track, initialZoom);
+    } else {
+      setZoomRange(null);
+      setZoom(null);
+    }
   }, [stream]);
 
   useEffect(() => () => stopStream(), []);
@@ -60,6 +90,20 @@ const FaceVerifyForm: React.FC<FaceVerifyFormProps> = ({ tempToken, onSuccess, o
   function stopStream() {
     stream?.getTracks().forEach(t => t.stop());
     setStream(null);
+    setZoomRange(null);
+    setZoom(null);
+  }
+
+  function applyZoom(track: MediaStreamTrack, value: number) {
+    track.applyConstraints({ advanced: [{ zoom: value }] }).catch(() => {
+      setErr(prev => prev ?? "Nie udało się dostosować przybliżenia kamery.");
+    });
+  }
+
+  function handleZoomChange(value: number) {
+    setZoom(value);
+    const track = stream?.getVideoTracks()[0];
+    if (track) applyZoom(track, value);
   }
 
   async function captureAndVerify() {
@@ -107,9 +151,12 @@ const FaceVerifyForm: React.FC<FaceVerifyFormProps> = ({ tempToken, onSuccess, o
 
       {stream && (
         <div className="card-section camera-section">
-          <div className="camera-preview" aria-label="Podgląd z kamery">
-            <video ref={videoRef} autoPlay muted playsInline width={320} height={240} />
-          </div>
+          <CameraFrame
+            videoRef={videoRef}
+            zoomRange={zoomRange}
+            zoom={zoom}
+            onZoomChange={handleZoomChange}
+          />
           <p className="helper-text">Pozostań nieruchomo i patrz w kamerę, aby dokończyć weryfikację.</p>
           <div className="actions-row inline">
             <Button variant="primary" onClick={captureAndVerify} disabled={busy || disabled}>Potwierdź twarzą</Button>
