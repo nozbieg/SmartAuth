@@ -12,11 +12,11 @@ public sealed class BiometricsOptions
     public int DetectorInputSize { get; set; } = 640; // retinaface typical
 
     // Polityka jakości / podobieństwa
-    public double MinOverallQuality { get; set; } = 0.65;
-    public double LightingWeight { get; set; } = 0.25;
-    public double SharpnessWeight { get; set; } = 0.35;
-    public double FrontalityWeight { get; set; } = 0.40;
-    public double SimilarityThresholdCosine { get; set; } = 0.45; // przykładowy próg (im wyżej tym bardziej restrykcyjnie)
+    public double MinOverallQuality { get; set; } = 0.70;      
+    public double LightingWeight { get; set; } = 0.30;          
+    public double SharpnessWeight { get; set; } = 0.35;          
+    public double FrontalityWeight { get; set; } = 0.35;      
+    public double SimilarityThresholdCosine { get; set; } = 0.55;
     public int MaxRetries { get; set; } = 3;
     public int CooldownSeconds { get; set; } = 10;
 }
