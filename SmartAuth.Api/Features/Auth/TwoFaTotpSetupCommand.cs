@@ -25,10 +25,10 @@ public class TwoFaTotpSetupCommandHandler(
     {
         var opts = totpOptions.Value;
         if (opts.Digits < 4 || opts.Digits > 10)
-            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Nieprawidłowa konfiguracja liczby cyfr TOTP"));
+            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal(Messages.TwoFactor.TotpInvalidConfiguration));
 
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+        if (ctx is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Unauthorized());
 
@@ -54,7 +54,7 @@ public class TwoFaTotpSetupCommandHandler(
 
         var activeExists = user.Authenticators.Any(a => a.Type == AuthenticatorType.Totp && a.IsActive);
         if (activeExists && !req.ForceRestart)
-            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Conflict("TOTP jest już włączony"));
+            return CommandResult<TwoFaTotpSetupResult>.Fail(Errors.Conflict(Messages.TwoFactor.TotpAlreadyEnabled));
 
         var secret = Totp.GenerateSecret();
         var uri = msClient.BuildOtpAuthUri(email, secret);

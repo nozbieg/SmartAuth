@@ -34,7 +34,7 @@ public static class Errors
     public static Error NotFound(string entity, string? id = null) => new()
     {
         Code = "common.not_found",
-        Message = id is null ? $"Nie znaleziono {entity}." : $"Nie znaleziono {entity} '{id}'.",
+        Message = id is null ? Messages.Resource.NotFound(entity) : Messages.Resource.NotFoundWithId(entity, id),
         Status = HttpStatusCode.NotFound,
         Metadata = new Dictionary<string, object>
         {
@@ -46,35 +46,35 @@ public static class Errors
     public static Error Unauthorized() => new()
     {
         Code = "auth.unauthorized",
-        Message = "Nie masz uprawnień do wykonania tej operacji.",
+        Message = Messages.Auth.Unauthorized,
         Status = HttpStatusCode.Unauthorized,
     };
 
     public static Error Forbidden(string? reason = null) => new()
     {
         Code = "auth.forbidden",
-        Message = reason ?? "Dostęp do tego zasobu jest zabroniony.",
+        Message = reason ?? Messages.Auth.Forbidden,
         Status = HttpStatusCode.Forbidden,
     };
 
     public static Error Conflict(string entity, string? reason = null) => new()
     {
         Code = "common.conflict",
-        Message = reason ?? $"{entity} już istnieje.",
+        Message = reason ?? Messages.Resource.AlreadyExists(entity),
         Status = HttpStatusCode.Conflict,
     };
 
     public static Error InvalidCredentials() => new()
     {
         Code = "auth.invalid_credentials",
-        Message = "Podane dane logowania są nieprawidłowe.",
+        Message = Messages.Auth.InvalidCredentials,
         Status = HttpStatusCode.BadRequest,
     };
 
     public static Error Internal(string? detail = null) => new()
     {
         Code = "system.internal_error",
-        Message = "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
+        Message = Messages.System.InternalError,
         Detail = detail,
         Status = HttpStatusCode.InternalServerError,
         Metadata = new Dictionary<string, object>(),

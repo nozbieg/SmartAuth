@@ -13,7 +13,7 @@ public sealed class TwoFaFaceStatusQueryHandler(IHttpContextAccessor accessor)
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult<TwoFaFaceStatusResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+            return CommandResult<TwoFaFaceStatusResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null)

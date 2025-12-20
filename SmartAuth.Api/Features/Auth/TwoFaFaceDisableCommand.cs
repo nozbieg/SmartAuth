@@ -11,7 +11,7 @@ public sealed class TwoFaFaceDisableCommandHandler(IHttpContextAccessor accessor
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult.Fail(Errors.Internal("Brak kontekstu HTTP"));
+            return CommandResult.Fail(Errors.Internal(Messages.System.MissingHttpContext));
 
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null)

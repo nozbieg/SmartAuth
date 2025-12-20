@@ -11,8 +11,8 @@ public class AuthLoginValidator : Validator<AuthLoginCommand>
 {
     protected override Task ValidateParams(AuthLoginCommand request)
     {
-        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), "Email jest wymagany");
-        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), "Hasło jest wymagane");
+        if (string.IsNullOrWhiteSpace(request.Email)) Metadata.Add(nameof(request.Email), Messages.Validation.EmailRequired);
+        if (string.IsNullOrWhiteSpace(request.Password)) Metadata.Add(nameof(request.Password), Messages.Validation.PasswordRequired);
         return Task.CompletedTask;
     }
 }
@@ -29,9 +29,9 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
             .FirstOrDefaultAsync(u => u.Email.ToLower() == emailNorm, ct);
 
         if (user is null)
-            return CommandResult<AuthLoginResult>.Fail(Errors.NotFound(nameof(Domain.Entities.User), emailNorm));
+            return CommandResult<AuthLoginResult>.Fail(Errors.NotFound(nameof(User), emailNorm));
         if (user.Status != UserStatus.Active)
-            return CommandResult<AuthLoginResult>.Fail(Errors.Forbidden(nameof(Domain.Entities.User)));
+            return CommandResult<AuthLoginResult>.Fail(Errors.Forbidden(nameof(User)));
 
         var ok = AuthCrypto.VerifyPassword(req.Password, user.PasswordHash, user.PasswordSalt);
         if (!ok) return CommandResult<AuthLoginResult>.Fail(Errors.InvalidCredentials());

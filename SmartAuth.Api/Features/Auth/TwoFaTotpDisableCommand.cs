@@ -3,7 +3,7 @@
 namespace SmartAuth.Api.Features.Auth;
 
 public record TwoFaTotpDisableCommand() : IRequest<CommandResult<TwoFaTotpDisableResult>>;
-public record TwoFaTotpDisableResult(string Message = "TOTP wyłączony");
+public record TwoFaTotpDisableResult(string Message = Messages.TwoFactor.TotpDisabled);
 
 public class TwoFaTotpDisableValidator : Validator<TwoFaTotpDisableCommand>
 {
@@ -16,7 +16,7 @@ public class TwoFaTotpDisableCommandHandler(AuthDbContext db, IHttpContextAccess
     public async Task<CommandResult<TwoFaTotpDisableResult>> Handle(TwoFaTotpDisableCommand req, CancellationToken ct)
     {
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+        if (ctx is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpDisableResult>.Fail(Errors.Unauthorized());
 

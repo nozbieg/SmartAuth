@@ -1,17 +1,16 @@
 ﻿using SmartAuth.Api.Utilities;
-using SmartAuth.Infrastructure.Security;
 
 namespace SmartAuth.Api.Features.Auth;
 
 public record TwoFaTotpEnableCommand(Guid SetupId, string Code) : IRequest<CommandResult<TwoFaTotpEnableResult>>;
-public record TwoFaTotpEnableResult(string Message = "TOTP enabled");
+public record TwoFaTotpEnableResult(string Message = Messages.TwoFactor.TotpEnabled);
 
 public class TwoFaTotpEnableValidator : Validator<TwoFaTotpEnableCommand>
 {
     protected override Task ValidateParams(TwoFaTotpEnableCommand request)
     {
-        if (request.SetupId == Guid.Empty) Metadata.Add(nameof(request.SetupId), "SetupId jest wymagany");
-        if (string.IsNullOrWhiteSpace(request.Code)) Metadata.Add(nameof(request.Code), "Kod jest wymagany");
+        if (request.SetupId == Guid.Empty) Metadata.Add(nameof(request.SetupId), Messages.Validation.SetupIdRequired);
+        if (string.IsNullOrWhiteSpace(request.Code)) Metadata.Add(nameof(request.Code), Messages.Validation.CodeRequired);
         return Task.CompletedTask;
     }
 }
@@ -22,7 +21,7 @@ public class TwoFaTotpEnableCommandHandler(AuthDbContext db, IHttpContextAccesso
     public async Task<CommandResult<TwoFaTotpEnableResult>> Handle(TwoFaTotpEnableCommand req, CancellationToken ct)
     {
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+        if (ctx is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpEnableResult>.Fail(Errors.Unauthorized());
 

@@ -11,7 +11,7 @@ public class TwoFaCodeVerifyValidator : Validator<TwoFaCodeVerifyCommand>
 {
     protected override Task ValidateParams(TwoFaCodeVerifyCommand request)
     {
-        if (string.IsNullOrEmpty(request.Code)) Metadata.Add(nameof(request.Code), "Kod jest wymagany");
+        if (string.IsNullOrEmpty(request.Code)) Metadata.Add(nameof(request.Code), Messages.Validation.CodeRequired);
         return Task.CompletedTask;
     }
 }
@@ -25,7 +25,7 @@ public class
     {
         var ctx = accessor.HttpContext;
         if (ctx is null)
-            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+            return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaCodeVerifyResult>.Fail(Errors.Unauthorized());
 
@@ -43,7 +43,7 @@ public class
         var totpOk = false;
         if (totpAuth is not null)
         {
-            totpOk = SmartAuth.Infrastructure.Security.Totp.ValidateCode(totpAuth.Secret, req.Code);
+            totpOk = Totp.ValidateCode(totpAuth.Secret, req.Code);
             if (totpOk)
             {
                 totpAuth.LastUsedAt = DateTimeOffset.UtcNow;

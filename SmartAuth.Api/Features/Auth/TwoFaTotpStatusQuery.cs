@@ -11,7 +11,7 @@ public class TwoFaTotpStatusQueryHandler(AuthDbContext db, IHttpContextAccessor 
     public async Task<CommandResult<TwoFaTotpStatusResult>> Handle(TwoFaTotpStatusQuery req, CancellationToken ct)
     {
         var ctx = accessor.HttpContext;
-        if (ctx is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Internal("Brak kontekstu HTTP"));
+        if (ctx is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Internal(Messages.System.MissingHttpContext));
         var email = TokenUtilities.GetSubjectFromToken(ctx);
         if (email is null) return CommandResult<TwoFaTotpStatusResult>.Fail(Errors.Unauthorized());
 
