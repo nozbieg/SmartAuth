@@ -7,7 +7,7 @@ import Button from "../../components/ui/Button";
 import TotpVerifyForm from '../../components/twofa/TotpVerifyForm';
 
 type Step = "credentials" | "twofa";
-type TwoFAMethod = "code" | "totp" | "face" | "voice";
+type TwoFAMethod = "totp" | "face" | "voice";
 
 const LoginPage: React.FC = () => {
     const nav = useNavigate();
