@@ -6,5 +6,5 @@ public static class FeatureFlagsConfig
 {
     public static bool TwoFaCodeEnabled => true;
     public static bool TwoFaFaceEnabled => true;
-    public static bool TwoFaVoiceEnabled => false;
+    public static bool TwoFaVoiceEnabled => true;
 }
