@@ -1,4 +1,5 @@
 using SmartAuth.Domain.Entities;
+using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Infrastructure.Biometrics;
 
@@ -20,7 +21,7 @@ public sealed class FaceRecognitionService(
     public async Task<FaceVerificationResult> VerifyAsync(FaceImagePayload image, IReadOnlyList<UserBiometric> references, CancellationToken ct = default)
     {
         if (references.Count == 0)
-            throw new FaceRecognitionException("face.no_reference", "No stored facial biometrics available for verification.");
+            throw new FaceRecognitionException("face.no_reference", Messages.Biometrics.NoReferenceForVerification);
 
         var analysis = await AnalyzeAsync(image, ct);
         FaceMatchResult? bestMatch = null;
@@ -37,10 +38,10 @@ public sealed class FaceRecognitionService(
         }
 
         if (bestMatch is null || bestBiometric is null)
-            throw new FaceRecognitionException("face.no_active_reference", "No active facial biometric matched the provided sample.");
+            throw new FaceRecognitionException("face.no_active_reference", Messages.Biometrics.NoActiveReferenceMatched);
 
         if (!policy.ValidateMatch(bestMatch, out var reason))
-            throw new FaceRecognitionException(reason ?? "face.match_failed", "Face similarity below the required threshold.");
+            throw new FaceRecognitionException(reason ?? "face.match_failed", Messages.Biometrics.MatchFailed);
 
         return new FaceVerificationResult(analysis, bestMatch, bestBiometric);
     }
@@ -48,7 +49,7 @@ public sealed class FaceRecognitionService(
     private async Task<FaceAnalysis> AnalyzeAsync(FaceImagePayload image, CancellationToken ct)
     {
         if (image.Rgb.Length < image.Width * image.Height * 3)
-            throw new FaceRecognitionException("face.image_decode_failed", "Face image payload is inconsistent with declared dimensions.");
+            throw new FaceRecognitionException("face.image_decode_failed", Messages.Biometrics.ImageDecodeFailed);
 
         ct.ThrowIfCancellationRequested();
         var detection = await detector.DetectAsync(image.Rgb, image.Width, image.Height, ct);
@@ -57,15 +58,15 @@ public sealed class FaceRecognitionService(
             .ThenByDescending(f => f.Box.Area)
             .FirstOrDefault();
         if (candidate is null)
-            throw new FaceRecognitionException("face.not_found", "No face detected in the provided image.");
+            throw new FaceRecognitionException("face.not_found", Messages.Biometrics.FaceNotDetected);
 
         var quality = await qualityAssessor.AssessAsync(image.Rgb, candidate.Box, ct);
         if (!policy.ValidateQuality(quality, out var qualityReason))
-            throw new FaceRecognitionException(qualityReason ?? "face.quality_rejected", "Face image quality is insufficient.");
+            throw new FaceRecognitionException(qualityReason ?? "face.quality_rejected", Messages.Biometrics.QualityInsufficient);
 
         var liveness = await livenessDetector.EvaluateAsync(image.Rgb, candidate.Box, ct);
         if (!policy.ValidateLiveness(liveness, out var livenessReason))
-            throw new FaceRecognitionException(livenessReason ?? "face.liveness_failed", "Liveness verification failed.");
+            throw new FaceRecognitionException(livenessReason ?? "face.liveness_failed", Messages.Biometrics.LivenessFailed);
 
         var embedding = await embedder.EmbedAsync(image.Rgb, candidate.Box, image.Width, image.Height, ct);
         var normalized = matcher.Normalize(embedding.Embedding);

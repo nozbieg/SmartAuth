@@ -101,6 +101,33 @@ public static class Messages
         public const string FaceNotDetected = "Nie wykryto twarzy na obrazie.";
         public const string MultipleFacesDetected = "Wykryto więcej niż jedną twarz na obrazie.";
         public const string LowQualityImage = "Jakość obrazu jest zbyt niska.";
+        public const string NoReferenceForVerification = "Brak zapisanej biometrii twarzy do weryfikacji.";
+        public const string NoActiveReferenceMatched = "Żadna aktywna biometria twarzy nie pasuje do próbki.";
+        public const string MatchFailed = "Podobieństwo twarzy poniżej wymaganego progu.";
+        public const string ImageDecodeFailed = "Dane obrazu twarzy są niespójne z zadeklarowanymi wymiarami.";
+        public const string QualityInsufficient = "Jakość obrazu twarzy jest niewystarczająca.";
+        public const string LivenessFailed = "Weryfikacja żywotności nie powiodła się.";
+        public const string ModelNotAvailable = "Model rozpoznawania twarzy nie jest dostępny.";
+        public const string RgbBufferSizeMismatch = "Rozmiar bufora RGB nie odpowiada wymiarom obrazu.";
+        public const string EmbeddingDimensionMismatch = "Niezgodność wymiarów wektorów osadzenia.";
+        public const string PgvectorBufferMissing = "Brak bufora wektora Pgvector.Vector.";
+    }
+
+    /// <summary>
+    /// Security and cryptography messages.
+    /// </summary>
+    public static class Security
+    {
+        public const string InvalidBase32Character = "Nieprawidłowy znak Base32.";
+    }
+
+    /// <summary>
+    /// Validation result messages.
+    /// </summary>
+    public static class ValidationResult
+    {
+        public static string SingleFieldInvalid(string fieldName, object message) => $"Pole '{fieldName}' jest nieprawidłowe: {message}";
+        public static string MultipleFieldsInvalid(string fieldNames, string messages) => $"Pola '{fieldNames}' są nieprawidłowe.\n{messages}";
     }
 }
 

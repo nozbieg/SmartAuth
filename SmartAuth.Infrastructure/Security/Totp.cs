@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Infrastructure.Security;
 
@@ -59,7 +60,7 @@ public static class Totp
         foreach (var c in cleaned)
         {
             var idx = alphabet.IndexOf(c);
-            if (idx < 0) throw new FormatException("Invalid base32 character.");
+            if (idx < 0) throw new FormatException(Messages.Security.InvalidBase32Character);
             value = (value << 5) | idx;
             bits += 5;
             if (bits >= 8)

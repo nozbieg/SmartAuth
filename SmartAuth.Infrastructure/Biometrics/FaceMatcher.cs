@@ -1,4 +1,5 @@
 ﻿using Pgvector;
+using SmartAuth.Infrastructure.Commons;
 using System.Reflection;
 
 namespace SmartAuth.Infrastructure.Biometrics;
@@ -15,13 +16,13 @@ public sealed class FaceMatcher : IFaceMatcher
         if (prop?.GetValue(v) is float[] arrProp) return arrProp;
         var field = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault(f => f.FieldType == typeof(float[]));
         if (field?.GetValue(v) is float[] arrField) return arrField;
-        throw new InvalidOperationException("Brak bufora wektora Pgvector.Vector.");
+        throw new InvalidOperationException(Messages.Biometrics.PgvectorBufferMissing);
     }
 
     public double ComputeSimilarity(Vector a, Vector b, FaceSimilarityMetric metric = FaceSimilarityMetric.Cosine)
     {
         var av = GetArray(a); var bv = GetArray(b);
-        if (av.Length != bv.Length) throw new ArgumentException("Embedding dimension mismatch");
+        if (av.Length != bv.Length) throw new ArgumentException(Messages.Biometrics.EmbeddingDimensionMismatch);
         return metric switch { FaceSimilarityMetric.Cosine => Cosine(av, bv), FaceSimilarityMetric.L2 => L2Distance(av, bv), _ => throw new NotSupportedException() };
     }
 

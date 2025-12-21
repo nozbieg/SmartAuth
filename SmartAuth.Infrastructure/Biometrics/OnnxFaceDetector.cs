@@ -1,5 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Infrastructure.Biometrics;
 
@@ -28,12 +29,12 @@ public sealed class OnnxFaceDetector : IFaceDetector, IDisposable
     {
         ArgumentNullException.ThrowIfNull(rgbImage);
         if (rgbImage.Length != width * height * 3)
-            throw new ArgumentException("RGB buffer size does not match image dimensions.", nameof(rgbImage));
+            throw new ArgumentException(Messages.Biometrics.RgbBufferSizeMismatch, nameof(rgbImage));
 
         ct.ThrowIfCancellationRequested();
 
         var session = _session.Value 
-            ?? throw new FaceRecognitionException("MODEL_NOT_AVAILABLE", "Face detector model is not available.");
+            ?? throw new FaceRecognitionException("MODEL_NOT_AVAILABLE", Messages.Biometrics.ModelNotAvailable);
 
         return Task.FromResult(RunInference(session, rgbImage, width, height));
     }

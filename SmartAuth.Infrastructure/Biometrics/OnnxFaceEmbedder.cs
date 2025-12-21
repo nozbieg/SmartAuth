@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Pgvector;
+using SmartAuth.Infrastructure.Commons;
 
 namespace SmartAuth.Infrastructure.Biometrics;
 
@@ -21,7 +22,7 @@ public sealed class OnnxFaceEmbedder : IFaceEmbedder, IDisposable
     {
         ArgumentNullException.ThrowIfNull(rgbImage);
         if (rgbImage.Length != width * height * 3)
-            throw new ArgumentException("RGB buffer size does not match image dimensions.", nameof(rgbImage));
+            throw new ArgumentException(Messages.Biometrics.RgbBufferSizeMismatch, nameof(rgbImage));
 
         ct.ThrowIfCancellationRequested();
 

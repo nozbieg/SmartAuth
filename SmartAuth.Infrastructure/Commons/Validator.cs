@@ -26,11 +26,11 @@ public abstract class Validator<TRequest> : IValidator<TRequest>
         if (metadata.Count == 1)
         {
             var entry = metadata.First();
-            return $"Field '{entry.Key}' is invalid: {entry.Value}";
+            return Messages.ValidationResult.SingleFieldInvalid(entry.Key, entry.Value);
         }
 
         var keys = string.Join(" ", metadata.Keys);
         var values = string.Join("\n", metadata.Values.Select(v => v?.ToString()));
-        return $"Fields '{keys}' are invalid.\n{values}";
+        return Messages.ValidationResult.MultipleFieldsInvalid(keys, values);
     }
 }
