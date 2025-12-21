@@ -49,8 +49,11 @@ public class AuthLoginCommandHandler(AuthDbContext db, IConfiguration cfg)
             methods.Add("code");
         }
         
-        if (flags.twofa_face && user.Biometrics.Any(b => b.Kind == AuthenticatorType.Face && b.IsActive)) 
+        if (flags.twofa_face && user.Biometrics.Any(b => b.Kind == AuthenticatorType.Face && b.IsActive))
             methods.Add("face");
+
+        if (flags.twofa_voice && user.Biometrics.Any(b => b.Kind == AuthenticatorType.Voice && b.IsActive))
+            methods.Add("voice");
 
         user.LastLoginAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ct);

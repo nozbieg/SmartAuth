@@ -23,6 +23,11 @@ public static class AuthEndpoints
         auth.MapDelete("/2fa/face", () => new TwoFaFaceDisableCommand()).RequireAuthorization();
         auth.MapGet("/2fa/face/status", () => new TwoFaFaceStatusQuery()).RequireAuthorization();
 
+        auth.MapPost("/2fa/voice/enroll", (TwoFaVoiceEnrollCommand req) => req).RequireAuthorization();
+        auth.MapPost("/2fa/voice/verify", (TwoFaVoiceVerifyCommand req) => req).RequireAuthorization();
+        auth.MapDelete("/2fa/voice", () => new TwoFaVoiceDisableCommand()).RequireAuthorization();
+        auth.MapGet("/2fa/voice/status", () => new TwoFaVoiceStatusQuery()).RequireAuthorization();
+
         return app;
     }
 }

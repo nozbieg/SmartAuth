@@ -37,5 +37,10 @@ public sealed class UserBiometricConfiguration : IEntityTypeConfiguration<UserBi
 
         b.Property(x => x.IsActive)
             .IsRequired();
+
+        b.Property(x => x.AudioSampleRate);
+
+        b.Property(x => x.AudioDurationSeconds)
+            .HasPrecision(8, 3);
     }
 }

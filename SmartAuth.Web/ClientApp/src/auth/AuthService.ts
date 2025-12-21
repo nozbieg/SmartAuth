@@ -13,6 +13,8 @@ export type TotpSetupResponse = { setupId: string; secret: string; otpAuthUri: s
 export type TotpStatusResponse = { active: boolean };
 export type FaceStatusResponse = { enabled: boolean; activeCount: number };
 export type FaceEnrollResponse = { biometricId: string; qualityScore: number; livenessScore: number; modelVersion: string };
+export type VoiceStatusResponse = { enabled: boolean; activeCount: number };
+export type VoiceEnrollResponse = { biometricId: string; qualityScore: number; durationSeconds: number; modelVersion: string };
 
 export class ApiError extends Error {
     code?: string;
@@ -137,6 +139,10 @@ export async function verifyFace(tempToken: string, imageBase64: string): Promis
     return apiPost<Verify2FAResponse>("/api/auth/2fa/face/verify", { imageBase64 }, { Authorization: `Bearer ${tempToken}` });
 }
 
+export async function verifyVoice(tempToken: string, audioBase64: string): Promise<Verify2FAResponse> {
+    return apiPost<Verify2FAResponse>("/api/auth/2fa/voice/verify", { audioBase64 }, { Authorization: `Bearer ${tempToken}` });
+}
+
 export function saveJwt(jwt: string) {
     localStorage.setItem("access_token", jwt);
 }
@@ -189,4 +195,16 @@ export async function faceEnroll(jwt: string, imageBase64: string): Promise<Face
 
 export async function faceDisable(jwt: string): Promise<{ message?: string }> {
     return apiDelete<{ message?: string }>("/api/auth/2fa/face", { Authorization: `Bearer ${jwt}` });
+}
+
+export async function voiceStatus(jwt: string): Promise<VoiceStatusResponse> {
+    return apiGet<VoiceStatusResponse>("/api/auth/2fa/voice/status", { Authorization: `Bearer ${jwt}` });
+}
+
+export async function voiceEnroll(jwt: string, audioBase64: string): Promise<VoiceEnrollResponse> {
+    return apiPost<VoiceEnrollResponse>("/api/auth/2fa/voice/enroll", { audioBase64 }, { Authorization: `Bearer ${jwt}` });
+}
+
+export async function voiceDisable(jwt: string): Promise<{ message?: string }> {
+    return apiDelete<{ message?: string }>("/api/auth/2fa/voice", { Authorization: `Bearer ${jwt}` });
 }

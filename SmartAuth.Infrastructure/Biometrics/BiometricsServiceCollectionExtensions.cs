@@ -19,6 +19,10 @@ public static class BiometricsServiceCollectionExtensions
         services.AddSingleton<IFaceMatcher, FaceMatcher>();
         services.AddSingleton<IBiometricPolicy, BiometricPolicyDefault>();
         services.AddSingleton<IFaceRecognitionService, FaceRecognitionService>();
+        services.AddSingleton<IVoiceEmbedder, OnnxVoiceEmbedder>();
+        services.AddSingleton<IVoiceMatcher, VoiceMatcher>();
+        services.AddSingleton<IVoicePolicy, VoicePolicyDefault>();
+        services.AddSingleton<IVoiceRecognitionService, VoiceRecognitionService>();
         return services;
     }
 }
