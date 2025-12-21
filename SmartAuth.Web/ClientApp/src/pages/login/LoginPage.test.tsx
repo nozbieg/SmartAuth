@@ -59,7 +59,7 @@ describe('LoginPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Zaloguj się/i }));
 
     await screen.findByRole('heading', { name: /Drugi krok/i });
-    expect(screen.getByRole('tab', { name: /Kod SMS/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Kod TOTP/i })).toBeInTheDocument();
   });
 
   it('weryfikuje kod TOTP i zapisuje końcowy jwt', async () => {

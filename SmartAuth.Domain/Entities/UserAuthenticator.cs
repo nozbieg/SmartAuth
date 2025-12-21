@@ -12,4 +12,4 @@ public class UserAuthenticator : AuditableEntity
     public bool IsActive { get; set; } = true;
 }
 
-public enum AuthenticatorType { Totp = 1, Face = 2 }
+public enum AuthenticatorType { Totp = 1, Face = 2, Voice = 3 }

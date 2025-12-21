@@ -50,6 +50,7 @@ public static class Messages
         public const string FaceEnabled = "Weryfikacja twarzy została włączona.";
         public const string FaceDisabled = "Weryfikacja twarzy została wyłączona.";
         public const string Face2FaDisabled = "Weryfikacja twarzy 2FA jest wyłączona.";
+        public const string Voice2FaDisabled = "Weryfikacja głosu 2FA jest wyłączona.";
     }
 
     /// <summary>
@@ -111,6 +112,14 @@ public static class Messages
         public const string RgbBufferSizeMismatch = "Rozmiar bufora RGB nie odpowiada wymiarom obrazu.";
         public const string EmbeddingDimensionMismatch = "Niezgodność wymiarów wektorów osadzenia.";
         public const string PgvectorBufferMissing = "Brak bufora wektora Pgvector.Vector.";
+
+        public const string AudioRequired = "Próbka audio jest wymagana.";
+        public const string InvalidAudio = "Nieprawidłowy format pliku audio.";
+        public const string AudioTooShort = "Próbka głosu jest zbyt krótka.";
+        public const string AudioTooQuiet = "Próbka głosu ma zbyt niski poziom sygnału.";
+        public const string NoVoiceReference = "Brak zapisanej biometrii głosu do weryfikacji.";
+        public const string VoiceMatchFailed = "Podobieństwo głosu poniżej wymaganego progu.";
+        public const string VoiceModelNotAvailable = "Model rozpoznawania głosu nie jest dostępny.";
     }
 
     /// <summary>

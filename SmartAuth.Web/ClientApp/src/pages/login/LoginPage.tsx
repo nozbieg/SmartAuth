@@ -6,6 +6,7 @@ import AuthLayout from "../../components/layout/AuthLayout";
 import Button from "../../components/ui/Button";
 import TotpVerifyForm from '../../components/twofa/TotpVerifyForm';
 import FaceVerifyForm from "../../components/twofa/FaceVerifyForm";
+import VoiceVerifyForm from "../../components/twofa/VoiceVerifyForm";
 
 type Step = "credentials" | "twofa";
 type TwoFAMethod = "totp" | "code" | "face" | "voice";
@@ -182,7 +183,13 @@ const LoginPage: React.FC = () => {
                     />
                 )}
                 {selectedMethod === "voice" && (
-                    <div className="alert alert-info" role="status">Metoda głosowa nie jest jeszcze dostępna w tej wersji.</div>
+                    <VoiceVerifyForm
+                        tempToken={tempToken}
+                        onBusyChange={setVerificationBusy}
+                        disabled={verificationBusy}
+                        onSuccess={(jwt) => { saveJwt(jwt); nav('/home',{replace:true}); }}
+                        onCancel={resetToCredentials}
+                    />
                 )}
             </div>
         );

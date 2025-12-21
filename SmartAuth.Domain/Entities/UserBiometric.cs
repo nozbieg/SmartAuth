@@ -17,6 +17,10 @@ public class UserBiometric : AuditableEntity
     public double QualityScore { get; set; }
     public LivenessMethod LivenessMethod { get; set; } = LivenessMethod.PassiveV1;
     public bool IsActive { get; set; } = true;
+
+    // Parametry nagrania audio (dla biometrii głosu)
+    public int? AudioSampleRate { get; set; }
+    public double? AudioDurationSeconds { get; set; }
 }
 
 public enum LivenessMethod { PassiveV1 = 1, ActiveChallenge = 2 }

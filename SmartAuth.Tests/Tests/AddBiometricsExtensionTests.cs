@@ -25,10 +25,16 @@ public sealed class AddBiometricsExtensionTests
         var embedder = sp.GetService<IFaceEmbedder>();
         var matcher = sp.GetService<IFaceMatcher>();
         var recognition = sp.GetService<IFaceRecognitionService>();
+        var voiceEmbedder = sp.GetService<IVoiceEmbedder>();
+        var voiceMatcher = sp.GetService<IVoiceMatcher>();
+        var voiceRecognition = sp.GetService<IVoiceRecognitionService>();
         Assert.NotNull(detector);
         Assert.NotNull(embedder);
         Assert.NotNull(matcher);
         Assert.NotNull(recognition);
+        Assert.NotNull(voiceEmbedder);
+        Assert.NotNull(voiceMatcher);
+        Assert.NotNull(voiceRecognition);
     }
 }
 

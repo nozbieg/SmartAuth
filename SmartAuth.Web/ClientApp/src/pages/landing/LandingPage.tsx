@@ -6,6 +6,7 @@ import AppLayout from "../../components/layout/AppLayout";
 import Card from "../../components/ui/Card";
 import TotpConfig from "../../components/twofa/TotpConfig";
 import BiometricComponent from "../../components/twofa/BiometricComponent";
+import VoiceConfig from "../../components/twofa/VoiceConfig";
 
 interface Claims {
     sub: string;
@@ -47,6 +48,7 @@ const LandingPage: React.FC = () => {
                 </Card>
                 <TotpConfig />
                 <BiometricComponent />
+                <VoiceConfig />
             </div>
         </AppLayout>
     );
