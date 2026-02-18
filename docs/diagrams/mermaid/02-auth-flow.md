@@ -2,18 +2,18 @@
 
 ```mermaid
 flowchart TD
-    Start([Start]) --> Register[Rejestracja\nPOST /api/auth/register]
-    Register --> Login[Logowanie emailem i hasłem\nPOST /api/auth/login]
+    start([Start]) --> register["Rejestracja<br/>POST /api/auth/register"]
+    register --> login["Logowanie emailem i hasłem<br/>POST /api/auth/login"]
 
-    Login --> Decision{Czy wymagana jest metoda 2FA?}
+    login --> requires2fa{"Czy wymagana jest metoda 2FA?"}
 
-    Decision -- Nie --> FinalJwt[Wydanie końcowego JWT\nrequires2Fa=false]
-    FinalJwt --> Done([Uwierzytelniono])
+    requires2fa -- "Nie" --> finalJwt["Wydanie końcowego JWT<br/>requires2Fa=false"]
+    finalJwt --> done([Uwierzytelniono])
 
-    Decision -- Tak --> TempJwt[Wydanie tokena tymczasowego\nrequires2Fa=true + methods (lista)]
-    TempJwt --> PickMethod[Klient wybiera metodę\n(code/totp/face/voice)]
+    requires2fa -- "Tak" --> tempJwt["Wydanie tokena tymczasowego<br/>requires2Fa=true; methods: lista"]
+    tempJwt --> pickMethod["Klient wybiera metodę<br/>(code/totp/face/voice)"]
 
-    PickMethod --> Verify2FA[Weryfikacja drugiego składnika\nPOST /api/auth/2fa/*/verify\nAuthorization: Bearer temp token]
-    Verify2FA --> Final2[Wydanie końcowego JWT]
-    Final2 --> Done
+    pickMethod --> verify2fa["Weryfikacja drugiego składnika<br/>POST /api/auth/2fa/*/verify<br/>Authorization: Bearer temp token"]
+    verify2fa --> final2["Wydanie końcowego JWT"]
+    final2 --> done
 ```
