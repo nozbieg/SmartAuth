@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam ArrowThickness 1
+skinparam DefaultFontSize 14
+skinparam PackageStyle rectangle
+
+actor "Użytkownik" as U
+rectangle "Sesja / Logowanie" as S
+
+package "RBAC" {
+  rectangle "Rola" as R
+  rectangle "Uprawnienie" as P
+}
+
+package "System" {
+  rectangle "Zasób" as Z
+  rectangle "Operacja\n(np. Odczyt/Zapis/Usuń)" as O
+}
+
+U --> S : uwierzytelnienie
+S --> R : przypisanie ról
+R --> P : zawiera uprawnienia
+P --> Z : dotyczy zasobu
+P --> O : pozwala na operację
+
+note right of R
+Przykłady ról:
+- Administrator
+- Pracownik
+- Audytor
+end note
+
+note right of P
+Uprawnienie = (Zasób + Operacja)
+np. "Dokumenty: Odczyt"
+end note
+
+@enduml
