@@ -1,0 +1,36 @@
+@startuml
+skinparam shadowing false
+title Aktywność logowania z gałęzią 2FA
+
+start
+:Użytkownik wysyła email + hasło;
+:POST /api/auth/login;
+:Wczytaj User + Authenticators + Biometrics;
+
+if (Czy użytkownik istnieje i hasło jest poprawne?) then (tak)
+  :Wyznacz dostępne metody 2FA\n(TOTP/code/face/voice);
+
+  if (Czy dostępna jest dowolna metoda 2FA?) then (nie)
+    :Wydaj access JWT;
+    :Zwróć requires2Fa=false;
+    stop
+  else (tak)
+    :Wydaj token tymczasowy JWT;
+    :Zwróć requires2Fa=true + methods[];
+    :Klient wybiera jedną metodę;
+    :POST /api/auth/2fa/*/verify\nz nagłówkiem Bearer temp JWT;
+
+    if (Czy weryfikacja 2FA zakończona sukcesem?) then (tak)
+      :Wydaj końcowy access JWT;
+      :Zwróć { jwt };
+      stop
+    else (nie)
+      :Zwróć invalid credentials / validation error;
+      stop
+    endif
+  endif
+else (nie)
+  :Zwróć not found / invalid credentials / forbidden;
+  stop
+endif
+@enduml

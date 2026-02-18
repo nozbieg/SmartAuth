@@ -1,0 +1,43 @@
+@startuml
+skinparam shadowing false
+title Wdrożenie SmartAuth (topologia lokalna/dev zarządzana przez Aspire)
+
+node "Maszyna deweloperska / host" {
+  node "Aspire AppHost\nSmartAuth.AppHost" as apphost
+
+  node "Usługa Web\nSmartAuth.Web" as web {
+    artifact "wwwroot + zasoby SPA" as assets
+    node "Przeglądarka klienta" as browser
+  }
+
+  node "Usługa API\nSmartAuth.Api" as api {
+    artifact "Endpointy auth\nJWT/TOTP/Biometria" as apiArtifacts
+  }
+
+  node "Kontener PostgreSQL\npgvector/pgvector:pg17" as pg {
+    database "authdb" as authdb
+    artifact "włączone rozszerzenie vector" as vector
+    artifact "skrypty db_init" as dbinit
+  }
+}
+
+apphost --> web : AddProject("web")
+apphost --> api : AddProject("apiservice")
+apphost --> pg : AddPostgres(...)
+apphost --> authdb : AddDatabase("authdb")
+
+browser --> web : HTTPS (pliki statyczne)
+browser --> api : HTTPS /api/auth/* (ze SPA)
+web --> api : referencja usługi / zależność
+api --> authdb : Npgsql + EF Core
+pg --> authdb
+pg --> vector
+pg --> dbinit
+
+note bottom of apphost
+Połączenia runtime z Program.cs:
+- Web czeka na API
+- API czeka na authdb
+- wystawione zewnętrzne endpointy HTTP
+end note
+@enduml

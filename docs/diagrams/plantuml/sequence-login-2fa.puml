@@ -1,4 +1,4 @@
-// Referenced workspace files:
+// Referencje plików workspace:
 // - [SmartAuth.Web](SmartAuth.Web/)
 // - [`Program`](SmartAuth.Api/Program.cs)
 // - [SmartAuth.Infrastructure](SmartAuth.Infrastructure/)
@@ -7,30 +7,31 @@
 // - [AGENTS.md](AGENTS.md)
 
 @startuml
-actor User
+actor User as Użytkownik
 participant SPA as "SPA\n[SmartAuth.Web/ClientApp]"
 participant Api as "Api\n[SmartAuth.Api/Program.cs]"
-participant DB as "Auth DB\n(Postgres / pgvector) (planned)"
-participant TwoFA as "2FA Service\n(dev placeholder)"
+participant DB as "Auth DB\n(Postgres / pgvector)"
+participant TwoFA as "Usługa 2FA\n(zachowanie deweloperskie)"
 
 note over Api,TwoFA
-  2FA may currently be a dev placeholder
+  Część logiki 2FA może działać
+  jako zachowanie deweloperskie.
 end note
 
-User -> SPA : Open app and submit email + password
+Użytkownik -> SPA : Otwiera aplikację i podaje email + hasło
 SPA -> Api : POST /login { email, password }
-Api -> Api : Validate credentials\n(uses [SmartAuth.Infrastructure] & [SmartAuth.Domain])
-Api -> DB : Query user & 2FA requirement
+Api -> Api : Waliduje poświadczenia\n(używa SmartAuth.Infrastructure i SmartAuth.Domain)
+Api -> DB : Odczyt użytkownika i wymagań 2FA
 
-alt 2FA required
+alt 2FA wymagane
   Api --> SPA : 200 { temp_jwt, available_2fa_methods }
   SPA -> Api : POST /2fa/verify { method, code, temp_jwt }
-  Api -> TwoFA : Verify code (dev placeholder behavior)
-  TwoFA --> Api : verification result
+  Api -> TwoFA : Weryfikacja kodu (zachowanie deweloperskie)
+  TwoFA --> Api : wynik weryfikacji
   Api --> SPA : 200 { access_jwt }
-else no 2FA
+else 2FA niewymagane
   Api --> SPA : 200 { access_jwt }
 end
 
-SPA -> User : Store access_jwt and proceed
+SPA -> Użytkownik : Zapisuje access_jwt i przechodzi dalej
 @enduml

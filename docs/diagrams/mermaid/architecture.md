@@ -1,18 +1,18 @@
 flowchart LR
-  subgraph Orchestration["Aspire Orchestration"]
+  subgraph Orchestration["Orkiestracja Aspire"]
     AppHost["SmartAuth.AppHost\n(Aspire AppHost)"]
   end
 
-  subgraph WebTier["Web"]
-    WebHost["SmartAuth.Web\n(ASP.NET host)"]
-    SPA["ClientApp\n(React + Vite SPA)"]
+  subgraph WebTier["Warstwa Web"]
+    WebHost["SmartAuth.Web\n(host ASP.NET)"]
+    SPA["ClientApp\n(SPA React + Vite)"]
     WebHost --> SPA
   end
 
   subgraph ApiTier["Backend"]
     Api["SmartAuth.Api\n(Minimal API)"]
-    Infra["SmartAuth.Infrastructure\n(EF Core, migrations, pgvector)"]
-    Domain["SmartAuth.Domain\n(Entities, shared types)"]
+    Infra["SmartAuth.Infrastructure\n(EF Core, migracje, pgvector)"]
+    Domain["SmartAuth.Domain\n(encje, typy współdzielone)"]
     Defaults["SmartAuth.ServiceDefaults\n(OTel, health)"]
     Api --> Infra
     Api --> Domain
