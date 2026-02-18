@@ -1,0 +1,43 @@
+@startuml
+skinparam shadowing false
+title SmartAuth Deployment (Aspire-managed local/dev topology)
+
+node "Developer Machine / Host" {
+  node "Aspire AppHost\nSmartAuth.AppHost" as apphost
+
+  node "Web Service\nSmartAuth.Web" as web {
+    artifact "wwwroot + SPA assets" as assets
+    node "Client Browser" as browser
+  }
+
+  node "API Service\nSmartAuth.Api" as api {
+    artifact "Auth endpoints\nJWT/TOTP/Biometrics" as apiArtifacts
+  }
+
+  node "PostgreSQL Container\npgvector/pgvector:pg17" as pg {
+    database "authdb" as authdb
+    artifact "vector extension enabled" as vector
+    artifact "db_init scripts" as dbinit
+  }
+}
+
+apphost --> web : AddProject("web")
+apphost --> api : AddProject("apiservice")
+apphost --> pg : AddPostgres(...)
+apphost --> authdb : AddDatabase("authdb")
+
+browser --> web : HTTPS (static files)
+browser --> api : HTTPS /api/auth/* (from SPA)
+web --> api : service reference / dependency
+api --> authdb : Npgsql + EF Core
+pg --> authdb
+pg --> vector
+pg --> dbinit
+
+note bottom of apphost
+Runtime wiring from Program.cs:
+- Web waits for API
+- API waits for authdb
+- external HTTP endpoints exposed
+end note
+@enduml

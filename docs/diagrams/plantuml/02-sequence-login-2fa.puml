@@ -1,0 +1,41 @@
+@startuml
+skinparam shadowing false
+autonumber
+title Login Sequence with Optional 2FA (Temporary JWT exchange)
+
+actor User
+participant "SmartAuth.Web/ClientApp" as SPA
+participant "SmartAuth.Api\nAuthEndpoints" as API
+participant "AuthLoginCommandHandler" as LoginHandler
+participant "AuthDbContext" as DB
+participant "TokenUtilities" as Tokens
+
+User -> SPA : Enter email/password
+SPA -> API : POST /api/auth/login
+API -> LoginHandler : AuthLoginCommand
+LoginHandler -> DB : Users.Include(Authenticators,Biometrics)
+DB --> LoginHandler : User aggregate
+LoginHandler -> LoginHandler : Verify password + gather methods
+
+alt methods.Count == 0
+  LoginHandler -> Tokens : IssueAccessToken(...)
+  Tokens --> LoginHandler : accessJwt
+  LoginHandler --> API : AuthLoginResult(false, accessJwt)
+  API --> SPA : 200 requires2Fa=false, token=accessJwt
+  SPA -> SPA : saveJwt(accessJwt)
+else methods.Count > 0
+  LoginHandler -> Tokens : IssueTempToken(...)
+  Tokens --> LoginHandler : tempJwt
+  LoginHandler --> API : AuthLoginResult(true, tempJwt, methods[])
+  API --> SPA : 200 requires2Fa=true, token=tempJwt, methods[]
+
+  User -> SPA : Provide 2FA factor
+  SPA -> API : POST /api/auth/2fa/{code|face|voice}/verify\nAuthorization: Bearer tempJwt
+  API -> DB : Load user + authenticator/biometric refs
+  DB --> API : Data for verification
+  API -> Tokens : IssueAccessToken(...)
+  Tokens --> API : accessJwt
+  API --> SPA : 200 { jwt: accessJwt }
+  SPA -> SPA : saveJwt(accessJwt)
+end
+@enduml

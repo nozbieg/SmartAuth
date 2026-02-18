@@ -1,0 +1,5 @@
+out/*
+!out/svg/
+!out/png/
+out/svg/*
+out/png/*

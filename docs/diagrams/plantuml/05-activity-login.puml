@@ -1,0 +1,36 @@
+@startuml
+skinparam shadowing false
+title Login Activity with 2FA Branch
+
+start
+:User submits email + password;
+:POST /api/auth/login;
+:Load User + Authenticators + Biometrics;
+
+if (User exists and password valid?) then (yes)
+  :Compute allowed 2FA methods\n(TOTP/code/face/voice);
+
+  if (Any 2FA method available?) then (no)
+    :Issue access JWT;
+    :Return requires2Fa=false;
+    stop
+  else (yes)
+    :Issue temporary JWT;
+    :Return requires2Fa=true + methods[];
+    :Client chooses one method;
+    :POST /api/auth/2fa/*/verify\nwith Bearer temp JWT;
+
+    if (2FA verification passed?) then (yes)
+      :Issue final access JWT;
+      :Return { jwt };
+      stop
+    else (no)
+      :Return invalid credentials / validation error;
+      stop
+    endif
+  endif
+else (no)
+  :Return not found / invalid credentials / forbidden;
+  stop
+endif
+@enduml
