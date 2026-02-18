@@ -1,0 +1,49 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+title SmartAuth - Component Diagram
+
+package "Aspire Orchestration" {
+  [SmartAuth.AppHost] as AppHost
+}
+
+package "Applications" {
+  [SmartAuth.Web\n(ASP.NET static host)] as Web
+  [SmartAuth.Web/ClientApp\n(React + Vite SPA)] as ClientApp
+  [SmartAuth.Api\n(Minimal API)] as Api
+}
+
+package "Core Libraries" {
+  [SmartAuth.ServiceDefaults\n(Health/OpenTelemetry/Discovery)] as ServiceDefaults
+  [SmartAuth.Infrastructure\n(EF Core + Biometrics + Security)] as Infra
+  [SmartAuth.Domain\n(Entities/Enums)] as Domain
+}
+
+database "PostgreSQL authdb\n(pgvector image: pgvector/pgvector:pg17)" as Postgres
+
+package "Quality" {
+  [SmartAuth.Tests] as Tests
+}
+
+AppHost --> Web : AddProject("web")
+AppHost --> Api : AddProject("apiservice")
+AppHost --> Postgres : AddPostgres()+AddDatabase("authdb")
+
+Web --> ClientApp : serves built SPA assets
+ClientApp --> Api : /api/auth/*
+
+Web ..> ServiceDefaults
+Api ..> ServiceDefaults
+
+Api --> Infra
+Infra --> Domain
+Infra --> Postgres : Npgsql + EF Core
+
+Tests ..> Api : integration + feature tests
+
+note right of Api
+- Auth endpoints: register/login/2fa
+- JWT access + temporary token
+- Face/voice/TOTP handlers
+end note
+@enduml

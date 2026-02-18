@@ -1,0 +1,99 @@
+@startuml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+title Domain + Infrastructure Class Model (key auth entities)
+
+package "SmartAuth.Domain.Common" {
+  abstract class AuditableEntity {
+    +Guid Id
+    +DateTime CreatedAtUtc
+    +DateTime UpdatedAtUtc
+  }
+}
+
+package "SmartAuth.Domain.Entities" {
+  class User {
+    +string Email
+    +byte[] PasswordHash
+    +byte[] PasswordSalt
+    +UserStatus Status
+    +DateTimeOffset? LastLoginAt
+    +ICollection<UserAuthenticator> Authenticators
+    +ICollection<UserBiometric> Biometrics
+  }
+
+  class UserAuthenticator {
+    +Guid UserId
+    +AuthenticatorType Type
+    +string Secret
+    +DateTimeOffset? LastUsedAt
+    +bool IsActive
+  }
+
+  class UserBiometric {
+    +Guid UserId
+    +AuthenticatorType Kind
+    +Vector Embedding
+    +string Version
+    +double QualityScore
+    +LivenessMethod LivenessMethod
+    +bool IsActive
+    +int? AudioSampleRate
+    +double? AudioDurationSeconds
+  }
+
+  enum UserStatus {
+    Active
+    Locked
+    Disabled
+  }
+
+  enum AuthenticatorType {
+    Totp
+    Face
+    Voice
+  }
+
+  enum LivenessMethod {
+    PassiveV1
+    ActiveChallenge
+  }
+}
+
+package "SmartAuth.Infrastructure" {
+  class AuthDbContext {
+    +DbSet<User> Users
+    +DbSet<UserAuthenticator> UserAuthenticators
+    +DbSet<UserBiometric> UserBiometrics
+    +SaveChangesAsync(cancellationToken)
+    +OnModelCreating(modelBuilder)
+  }
+
+  class UserConfiguration
+  class UserAuthenticatorConfiguration
+  class UserBiometricConfiguration
+}
+
+AuditableEntity <|-- User
+AuditableEntity <|-- UserAuthenticator
+AuditableEntity <|-- UserBiometric
+
+User "1" o-- "0..*" UserAuthenticator : Authenticators
+User "1" o-- "0..*" UserBiometric : Biometrics
+UserAuthenticator "*" --> "1" User : UserId
+UserBiometric "*" --> "1" User : UserId
+
+AuthDbContext --> User
+AuthDbContext --> UserAuthenticator
+AuthDbContext --> UserBiometric
+
+UserConfiguration ..> User
+UserAuthenticatorConfiguration ..> UserAuthenticator
+UserBiometricConfiguration ..> UserBiometric
+
+note right of LivenessMethod
+ActiveChallenge exists in enum,
+but passive liveness path is the
+currently implemented default.
+end note
+@enduml
