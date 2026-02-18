@@ -1,44 +1,24 @@
-// Referenced workspace files:
-// - [SmartAuth.AppHost](SmartAuth.AppHost/)
-// - [`Program`](SmartAuth.Api/Program.cs)
-// - [SmartAuth.Web](SmartAuth.Web/)
-// - [SmartAuth.Infrastructure](SmartAuth.Infrastructure/)
-// - [SmartAuth.Domain](SmartAuth.Domain/)
-// - [SmartAuth.ServiceDefaults](SmartAuth.ServiceDefaults/)
-// - [SmartAuth.Tests](SmartAuth.Tests/)
-
 @startuml
 skinparam componentStyle rectangle
 
-package "Aspire AppHost\n[SmartAuth.AppHost]" as AppHost {
-  component "Web\n[SmartAuth.Web]" as Web
-  component "Api\n[SmartAuth.Api/Program.cs]" as Api
-  database "Postgres\n(pgvector) (planned)" as Postgres
-}
+component "SmartAuth.AppHost\n(Aspire)" as AppHost
+component "SmartAuth.Web\n(ASP.NET host)" as Web
+component "ClientApp\n(React + Vite)" as SPA
+component "SmartAuth.Api\n(Minimal API)" as Api
+component "SmartAuth.Infrastructure\n(EF Core + pgvector)" as Infra
+component "SmartAuth.Domain" as Domain
+component "SmartAuth.ServiceDefaults\n(OTel/Health)" as Defaults
+database "PostgreSQL authdb\n(pgvector)" as DB
 
-component "Infrastructure\n[SmartAuth.Infrastructure]" as Infra
-component "Domain\n[SmartAuth.Domain]" as Domain
-component "ServiceDefaults\n[SmartAuth.ServiceDefaults]" as ServiceDefaults
-component "Tests\n[SmartAuth.Tests]" as Tests
+AppHost --> Web
+AppHost --> Api
+AppHost --> DB
 
-AppHost --> Web : orchestrates
-AppHost --> Api : orchestrates
-AppHost --> Postgres : orchestrates
+Web --> SPA
+SPA --> Api
 
-Web --> Api : HTTP/REST (SPA -> Api)
-Api --> Infra : uses
-Api --> Domain : uses
-Api --> ServiceDefaults : telemetry / defaults
-Api --> Postgres : connects to (DB)
-
-Tests --> Api : integration / unit tests
-Tests --> Infra : test helpers
-
-note right of Postgres
-  planned
-end note
-
-note right of Web
-  SPA React/Vite (planned)
-end note
+Api --> Infra
+Api --> Domain
+Api --> Defaults
+Api --> DB
 @enduml
