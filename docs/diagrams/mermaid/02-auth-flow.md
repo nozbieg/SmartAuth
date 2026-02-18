@@ -1,19 +1,19 @@
-# Authentication Flow (Mermaid)
+# Przepływ uwierzytelniania (Mermaid)
 
 ```mermaid
 flowchart TD
-    Start([Start]) --> Register[Register\nPOST /api/auth/register]
-    Register --> Login[Login with email+password\nPOST /api/auth/login]
+    Start([Start]) --> Register[Rejestracja\nPOST /api/auth/register]
+    Register --> Login[Logowanie emailem i hasłem\nPOST /api/auth/login]
 
-    Login --> Decision{Any 2FA method required?}
+    Login --> Decision{Czy wymagana jest metoda 2FA?}
 
-    Decision -- No --> FinalJwt[Issue final access JWT\nrequires2Fa=false]
-    FinalJwt --> Done([Authenticated])
+    Decision -- Nie --> FinalJwt[Wydanie końcowego JWT\nrequires2Fa=false]
+    FinalJwt --> Done([Uwierzytelniono])
 
-    Decision -- Yes --> TempJwt[Issue temporary JWT\nrequires2Fa=true + methods[]]
-    TempJwt --> PickMethod[Client selects method\n(code/totp/face/voice)]
+    Decision -- Tak --> TempJwt[Wydanie tokena tymczasowego\nrequires2Fa=true + methods[]]
+    TempJwt --> PickMethod[Klient wybiera metodę\n(code/totp/face/voice)]
 
-    PickMethod --> Verify2FA[Verify second factor\nPOST /api/auth/2fa/*/verify\nAuthorization: Bearer temp token]
-    Verify2FA --> Final2[Issue final access JWT]
+    PickMethod --> Verify2FA[Weryfikacja drugiego składnika\nPOST /api/auth/2fa/*/verify\nAuthorization: Bearer temp token]
+    Verify2FA --> Final2[Wydanie końcowego JWT]
     Final2 --> Done
 ```

@@ -1,21 +1,21 @@
 @startuml
 skinparam shadowing false
 autonumber
-title Login Sequence with Optional 2FA (Temporary JWT exchange)
+title Sekwencja logowania z opcjonalnym 2FA (wymiana tokena tymczasowego)
 
-actor User
+actor User as Użytkownik
 participant "SmartAuth.Web/ClientApp" as SPA
 participant "SmartAuth.Api\nAuthEndpoints" as API
 participant "AuthLoginCommandHandler" as LoginHandler
 participant "AuthDbContext" as DB
 participant "TokenUtilities" as Tokens
 
-User -> SPA : Enter email/password
+Użytkownik -> SPA : Wprowadza email i hasło
 SPA -> API : POST /api/auth/login
 API -> LoginHandler : AuthLoginCommand
 LoginHandler -> DB : Users.Include(Authenticators,Biometrics)
-DB --> LoginHandler : User aggregate
-LoginHandler -> LoginHandler : Verify password + gather methods
+DB --> LoginHandler : Agregat użytkownika
+LoginHandler -> LoginHandler : Weryfikacja hasła + wybór metod
 
 alt methods.Count == 0
   LoginHandler -> Tokens : IssueAccessToken(...)
@@ -29,10 +29,10 @@ else methods.Count > 0
   LoginHandler --> API : AuthLoginResult(true, tempJwt, methods[])
   API --> SPA : 200 requires2Fa=true, token=tempJwt, methods[]
 
-  User -> SPA : Provide 2FA factor
+  Użytkownik -> SPA : Podaje drugi składnik
   SPA -> API : POST /api/auth/2fa/{code|face|voice}/verify\nAuthorization: Bearer tempJwt
-  API -> DB : Load user + authenticator/biometric refs
-  DB --> API : Data for verification
+  API -> DB : Załaduj użytkownika + referencje auth/biometria
+  DB --> API : Dane do weryfikacji
   API -> Tokens : IssueAccessToken(...)
   Tokens --> API : accessJwt
   API --> SPA : 200 { jwt: accessJwt }

@@ -2,7 +2,7 @@
 skinparam componentStyle rectangle
 
 component "SmartAuth.AppHost\n(Aspire)" as AppHost
-component "SmartAuth.Web\n(ASP.NET host)" as Web
+component "SmartAuth.Web\n(host ASP.NET)" as Web
 component "ClientApp\n(React + Vite)" as SPA
 component "SmartAuth.Api\n(Minimal API)" as Api
 component "SmartAuth.Infrastructure\n(EF Core + pgvector)" as Infra

@@ -1,7 +1,7 @@
 @startuml
 skinparam shadowing false
 skinparam classAttributeIconSize 0
-title Domain + Infrastructure Class Model (key auth entities)
+title Model klas domeny i infrastruktury (kluczowe encje auth)
 
 package "SmartAuth.Domain.Common" {
   abstract class AuditableEntity {
@@ -92,8 +92,8 @@ UserAuthenticatorConfiguration ..> UserAuthenticator
 UserBiometricConfiguration ..> UserBiometric
 
 note right of LivenessMethod
-ActiveChallenge exists in enum,
-but passive liveness path is the
-currently implemented default.
+ActiveChallenge istnieje w enumie,
+ale domyślnie zaimplementowana
+jest ścieżka passive liveness.
 end note
 @enduml

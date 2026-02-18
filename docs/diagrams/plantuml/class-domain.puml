@@ -1,0 +1,43 @@
+@startuml
+skinparam classAttributeIconSize 0
+title SmartAuth - model domenowy (klasy)
+
+class AuditableEntity {
+  +Id: Guid
+  +CreatedAtUtc: DateTime
+  +UpdatedAtUtc: DateTime
+}
+
+class User {
+  +Email: string
+  +PasswordHash: byte[]
+  +PasswordSalt: byte[]
+  +Status: UserStatus
+  +LastLoginAt: DateTimeOffset?
+}
+
+class UserAuthenticator {
+  +UserId: Guid
+  +Type: AuthenticatorType
+  +Secret: string
+  +LastUsedAt: DateTimeOffset?
+  +IsActive: bool
+}
+
+class UserBiometric {
+  +UserId: Guid
+  +Kind: AuthenticatorType
+  +Embedding: Vector
+  +Version: string
+  +QualityScore: double
+  +LivenessMethod: LivenessMethod
+  +IsActive: bool
+}
+
+AuditableEntity <|-- User
+AuditableEntity <|-- UserAuthenticator
+AuditableEntity <|-- UserBiometric
+
+User "1" o-- "0..*" UserAuthenticator : Authenticators
+User "1" o-- "0..*" UserBiometric : Biometrics
+@enduml

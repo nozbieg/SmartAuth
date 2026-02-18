@@ -1,23 +1,23 @@
 @startuml
 skinparam shadowing false
-title SmartAuth Deployment (Aspire-managed local/dev topology)
+title Wdrożenie SmartAuth (topologia lokalna/dev zarządzana przez Aspire)
 
-node "Developer Machine / Host" {
+node "Maszyna deweloperska / host" {
   node "Aspire AppHost\nSmartAuth.AppHost" as apphost
 
-  node "Web Service\nSmartAuth.Web" as web {
-    artifact "wwwroot + SPA assets" as assets
-    node "Client Browser" as browser
+  node "Usługa Web\nSmartAuth.Web" as web {
+    artifact "wwwroot + zasoby SPA" as assets
+    node "Przeglądarka klienta" as browser
   }
 
-  node "API Service\nSmartAuth.Api" as api {
-    artifact "Auth endpoints\nJWT/TOTP/Biometrics" as apiArtifacts
+  node "Usługa API\nSmartAuth.Api" as api {
+    artifact "Endpointy auth\nJWT/TOTP/Biometria" as apiArtifacts
   }
 
-  node "PostgreSQL Container\npgvector/pgvector:pg17" as pg {
+  node "Kontener PostgreSQL\npgvector/pgvector:pg17" as pg {
     database "authdb" as authdb
-    artifact "vector extension enabled" as vector
-    artifact "db_init scripts" as dbinit
+    artifact "włączone rozszerzenie vector" as vector
+    artifact "skrypty db_init" as dbinit
   }
 }
 
@@ -26,18 +26,18 @@ apphost --> api : AddProject("apiservice")
 apphost --> pg : AddPostgres(...)
 apphost --> authdb : AddDatabase("authdb")
 
-browser --> web : HTTPS (static files)
-browser --> api : HTTPS /api/auth/* (from SPA)
-web --> api : service reference / dependency
+browser --> web : HTTPS (pliki statyczne)
+browser --> api : HTTPS /api/auth/* (ze SPA)
+web --> api : referencja usługi / zależność
 api --> authdb : Npgsql + EF Core
 pg --> authdb
 pg --> vector
 pg --> dbinit
 
 note bottom of apphost
-Runtime wiring from Program.cs:
-- Web waits for API
-- API waits for authdb
-- external HTTP endpoints exposed
+Połączenia runtime z Program.cs:
+- Web czeka na API
+- API czeka na authdb
+- wystawione zewnętrzne endpointy HTTP
 end note
 @enduml

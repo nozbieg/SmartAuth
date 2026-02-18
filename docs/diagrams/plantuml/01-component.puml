@@ -1,27 +1,27 @@
 @startuml
 skinparam componentStyle rectangle
 skinparam shadowing false
-title SmartAuth - Component Diagram
+title SmartAuth - Diagram komponentów
 
-package "Aspire Orchestration" {
+package "Orkiestracja Aspire" {
   [SmartAuth.AppHost] as AppHost
 }
 
-package "Applications" {
-  [SmartAuth.Web\n(ASP.NET static host)] as Web
-  [SmartAuth.Web/ClientApp\n(React + Vite SPA)] as ClientApp
+package "Aplikacje" {
+  [SmartAuth.Web\n(host ASP.NET dla statycznego frontendu)] as Web
+  [SmartAuth.Web/ClientApp\n(SPA React + Vite)] as ClientApp
   [SmartAuth.Api\n(Minimal API)] as Api
 }
 
-package "Core Libraries" {
+package "Biblioteki rdzeniowe" {
   [SmartAuth.ServiceDefaults\n(Health/OpenTelemetry/Discovery)] as ServiceDefaults
-  [SmartAuth.Infrastructure\n(EF Core + Biometrics + Security)] as Infra
-  [SmartAuth.Domain\n(Entities/Enums)] as Domain
+  [SmartAuth.Infrastructure\n(EF Core + biometria + bezpieczeństwo)] as Infra
+  [SmartAuth.Domain\n(encje/enumy)] as Domain
 }
 
-database "PostgreSQL authdb\n(pgvector image: pgvector/pgvector:pg17)" as Postgres
+database "PostgreSQL authdb\n(obraz pgvector/pgvector:pg17)" as Postgres
 
-package "Quality" {
+package "Jakość" {
   [SmartAuth.Tests] as Tests
 }
 
@@ -29,7 +29,7 @@ AppHost --> Web : AddProject("web")
 AppHost --> Api : AddProject("apiservice")
 AppHost --> Postgres : AddPostgres()+AddDatabase("authdb")
 
-Web --> ClientApp : serves built SPA assets
+Web --> ClientApp : serwuje zbudowane zasoby SPA
 ClientApp --> Api : /api/auth/*
 
 Web ..> ServiceDefaults
@@ -39,11 +39,11 @@ Api --> Infra
 Infra --> Domain
 Infra --> Postgres : Npgsql + EF Core
 
-Tests ..> Api : integration + feature tests
+Tests ..> Api : testy integracyjne i feature
 
 note right of Api
-- Auth endpoints: register/login/2fa
-- JWT access + temporary token
-- Face/voice/TOTP handlers
+- Endpointy auth: register/login/2fa
+- JWT dostępowy + token tymczasowy
+- Handlery face/voice/TOTP
 end note
 @enduml
